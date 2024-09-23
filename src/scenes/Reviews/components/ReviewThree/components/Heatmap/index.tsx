@@ -56,7 +56,9 @@ const Heatmap: FC<{ p: number }> = ({ p }) => {
 					justifyContent: 'space-between',
 				}}
 			>
-				<Typography level="h1">Korea's Blood Supply, Over Time</Typography>
+				<Typography level="h1">
+					Korea's Blood Supply & Policy Initiatives
+				</Typography>
 				<Box
 					sx={{
 						display: 'flex',
