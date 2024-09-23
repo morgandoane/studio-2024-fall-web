@@ -1,12 +1,14 @@
-import { Box, Slider, Typography } from '@mui/joy';
+import { Box, Slider, Switch, Typography } from '@mui/joy';
 import { FC, useState } from 'react';
-import { Datafilter } from '../../../../../../assets/DataFilter';
+import { Datafilter } from '../../../../../../assets/data/DataFilter';
 import Viz from '../../../../../../components/display/Viz';
-import { useDataset } from '../../../../../../assets/useDataset';
+import { useDataset } from '../../../../../../assets/data/useDataset';
 import Controls from './components/Controls';
-import { Month } from '../../../../../../assets/Datapoint';
+import { Month } from '../../../../../../assets/data/Datapoint';
 
 const Heatmap: FC<{ p: number }> = ({ p }) => {
+	const [showPolicies, setShowPolicies] = useState(false);
+
 	const [start, setStart] = useState<{ month: Month; year: number }>({
 		month: 0,
 		year: 2004,
@@ -55,12 +57,15 @@ const Heatmap: FC<{ p: number }> = ({ p }) => {
 				<Typography level="h1">Korea's Blood Supply, Over Time</Typography>
 			</Box>
 			<Box sx={{ flex: 1, display: 'flex', alignItems: 'stretch' }}>
-				<Viz.Heatmap filter={{ ...filter1, start, end }} />
+				<Viz.Heatmap
+					filter={{ ...filter1, start, end }}
+					showPolicies={showPolicies}
+				/>
 			</Box>
 			<Box
 				sx={{
 					display: 'flex',
-					gap: 2,
+					gap: 3,
 				}}
 			>
 				<Controls value={filter1} onChange={setFilter1} sources={sources} />
@@ -80,6 +85,23 @@ const Heatmap: FC<{ p: number }> = ({ p }) => {
 									setEnd({ ...end, year: v[1] });
 								}
 							}}
+						/>
+					</Box>
+				</Box>
+				<Box sx={{ flex: 1 }} />
+				<Box>
+					<Box p={2} />
+					<Box
+						sx={{
+							display: 'flex',
+							alignItems: 'center',
+							gap: 1,
+						}}
+					>
+						<Typography level="body-xs">Show Policies</Typography>
+						<Switch
+							checked={showPolicies}
+							onChange={() => setShowPolicies(!showPolicies)}
 						/>
 					</Box>
 				</Box>

@@ -74,10 +74,10 @@ const ReviewThree: FC = () => {
 					<Hero p={p} />
 				</Section>
 				<Section>
-					<ResearchQuestion p={p} />
+					<Abstract p={p} />
 				</Section>
 				<Section>
-					<Abstract />
+					<ResearchQuestion p={p} />
 				</Section>
 				<Section>
 					<Heatmap p={p} />

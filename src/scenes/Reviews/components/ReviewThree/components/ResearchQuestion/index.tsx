@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 import { FC } from 'react';
 
 const questions = [
-	'Is there a discoverable correlation between specific investments and campaigns held by Korea Red Cross and Korea’s overall blood donation supply?',
-	'Are there some specific Korea Red Cross investments or campaigns that have more impact on the Korean blood donation supply?',
-	'Do local efforts of regional Korea Red Cross have impact on regional Korean blood donation supply?',
-	'Are there some specific Korea Red Cross investments or campaigns that is more effective to a specific subset of people?',
+	'Is there a measurable correlation between specific investments or campaigns by the Korean Red Cross and changes in Korea’s overall blood donation supply?',
+	'Which specific investments or campaigns by the Korean Red Cross have the greatest impact on increasing the national blood donation supply?',
+	'How do regional efforts by local branches of the Korean Red Cross influence the blood donation supply in their respective regions?',
+	'Which specific investments or campaigns by the Korean Red Cross are most effective in targeting particular demographics or subsets of the population?',
 ];
 
 const ResearchQuestion: FC<{ p: number }> = ({ p }) => {
