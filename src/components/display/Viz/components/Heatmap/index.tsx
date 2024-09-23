@@ -126,26 +126,36 @@ const Heatmap: FC<HeatmapProps> = ({ filter, showPolicies }) => {
 										{showPolicies &&
 											thisPolicies.map((policy, policyIndex) => {
 												return (
-													<Box
+													<motion.div
 														key={`year-${yearIndex}-month-${month}-policy-${policyIndex}`}
-														sx={{
-															zIndex: 5,
-															position: 'absolute',
-															height: `calc(${policyIndex * 24}px + (50vh / ${
-																years.length
-															}))`,
-															width: `calc(${policyIndex * 24}px + (50vh / ${
-																years.length
-															}))`,
-															borderRadius: '50%',
-															border: `2px dashed ${palette.neutral[800]}`,
-															top: '50%',
-															left: '50%',
-															transform: 'translate(-50%, -50%)',
+														initial={{ opacity: 0 }}
+														whileInView={{
+															opacity: 1,
 														}}
-														onMouseEnter={() => setHoveredPolicy(policy)}
-														onMouseLeave={() => setHoveredPolicy(null)}
-													/>
+														transition={{
+															delay: (yearIndex + month) * 0.02,
+														}}
+													>
+														<Box
+															sx={{
+																zIndex: 5,
+																position: 'absolute',
+																height: `calc(${policyIndex * 24}px + (50vh / ${
+																	years.length
+																}))`,
+																width: `calc(${policyIndex * 24}px + (50vh / ${
+																	years.length
+																}))`,
+																borderRadius: '50%',
+																border: `2px dashed ${palette.neutral[800]}`,
+																top: '50%',
+																left: '50%',
+																transform: 'translate(-50%, -50%)',
+															}}
+															onMouseEnter={() => setHoveredPolicy(policy)}
+															onMouseLeave={() => setHoveredPolicy(null)}
+														/>
+													</motion.div>
 												);
 											})}
 										<AnimatePresence>
