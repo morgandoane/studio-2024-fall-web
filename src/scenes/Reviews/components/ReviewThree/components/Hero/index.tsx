@@ -47,6 +47,29 @@ const Hero: FC<{ p: number }> = ({ p }) => {
 						Morgan Doane
 					</Typography>
 				</Box>
+				<Box
+					sx={{
+						display: 'flex',
+						gap: 2,
+						alignItems: 'center',
+					}}
+				>
+					<img
+						src="https://avatars.githubusercontent.com/u/57612141?v=4"
+						alt="Hun Kim"
+						style={{ width: 80, height: 80, borderRadius: '50%' }}
+					/>
+					<img
+						src="https://media.licdn.com/dms/image/v2/D5603AQFYNsYNHadKmA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1696187928966?e=1732752000&v=beta&t=6vk3e9m-nBtR5YCkSvZbJa2GGEB3GmKQRee18eIMuZ0"
+						alt="Hun Kim"
+						style={{
+							width: 80,
+							height: 80,
+							borderRadius: '50%',
+							filter: 'grayscale(100%)',
+						}}
+					/>
+				</Box>
 				<Divider orientation="vertical" />
 			</Box>
 			<Divider />
