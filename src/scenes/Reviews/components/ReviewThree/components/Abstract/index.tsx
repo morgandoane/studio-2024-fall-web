@@ -1,7 +1,10 @@
-import { Box, Typography } from '@mui/joy';
+import { Box, Divider, Typography, useTheme } from '@mui/joy';
 import { FC } from 'react';
+import { FaArrowRight } from 'react-icons/fa';
 
 const Abstract: FC<{ p: number }> = ({ p }) => {
+	const { palette } = useTheme();
+
 	return (
 		<Box
 			p={p}
@@ -35,6 +38,47 @@ const Abstract: FC<{ p: number }> = ({ p }) => {
 				investments, regional efforts, and their impact on blood donation
 				supply, potentially offering a strategic framework for improving blood
 				donation outcomes.
+			</Typography>
+			<Box p={3} />
+			<Box
+				sx={{
+					display: 'flex',
+					alignItems: 'center',
+					gap: 1,
+				}}
+			>
+				<Box
+					sx={{
+						borderRadius: '4px',
+						background: palette.neutral[900],
+						display: 'flex',
+						alignItems: 'center',
+						p: 2,
+					}}
+				>
+					<Typography level="h4" sx={{ color: 'white' }}>
+						Policy
+					</Typography>
+				</Box>
+				<Box sx={{ width: '60px' }}>
+					<Divider />
+				</Box>
+				<Box
+					sx={{
+						borderRadius: '4px',
+						background: palette.primary[500],
+						display: 'flex',
+						alignItems: 'center',
+						p: 2,
+					}}
+				>
+					<Typography level="h4" sx={{ color: 'white' }}>
+						Effect on Blood Supply
+					</Typography>
+				</Box>
+			</Box>
+			<Typography level="h4">
+				☝️ ie. How to visualize this relationship?
 			</Typography>
 		</Box>
 	);
