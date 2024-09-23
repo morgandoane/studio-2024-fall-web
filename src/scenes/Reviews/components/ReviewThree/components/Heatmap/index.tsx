@@ -1,13 +1,15 @@
-import { Box, Slider, Switch, Typography } from '@mui/joy';
+import { Box, Slider, Switch, Typography, useTheme } from '@mui/joy';
 import { FC, useState } from 'react';
 import { Datafilter } from '../../../../../../assets/data/DataFilter';
 import Viz from '../../../../../../components/display/Viz';
 import { useDataset } from '../../../../../../assets/data/useDataset';
 import Controls from './components/Controls';
 import { Month } from '../../../../../../assets/data/Datapoint';
+import { FaArrowRight } from 'react-icons/fa';
 
 const Heatmap: FC<{ p: number }> = ({ p }) => {
-	const [showPolicies, setShowPolicies] = useState(false);
+	const { palette } = useTheme();
+	const [showPolicies, setShowPolicies] = useState(true);
 
 	const [start, setStart] = useState<{ month: Month; year: number }>({
 		month: 0,
@@ -55,6 +57,46 @@ const Heatmap: FC<{ p: number }> = ({ p }) => {
 				}}
 			>
 				<Typography level="h1">Korea's Blood Supply, Over Time</Typography>
+				<Box
+					sx={{
+						display: 'flex',
+						alignItems: 'center',
+						gap: 3,
+					}}
+				>
+					<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+						<Typography level="body-xs">Policy Initiatives</Typography>
+						<Box
+							sx={{
+								width: '16px',
+								height: '16px',
+								borderRadius: '50%',
+								border: `2px dashed ${palette.neutral[700]}`,
+							}}
+						></Box>
+					</Box>
+					<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+						<Typography level="body-xs">Donations</Typography>
+						<Box
+							sx={{
+								width: '16px',
+								height: '16px',
+								borderRadius: '4px',
+								background: palette.primary[500],
+								opacity: 0.2,
+							}}
+						></Box>
+						<FaArrowRight />
+						<Box
+							sx={{
+								width: '16px',
+								height: '16px',
+								borderRadius: '4px',
+								background: palette.primary[500],
+							}}
+						></Box>
+					</Box>
+				</Box>
 			</Box>
 			<Box sx={{ flex: 1, display: 'flex', alignItems: 'stretch' }}>
 				<Viz.Heatmap
