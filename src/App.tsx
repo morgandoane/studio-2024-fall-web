@@ -1,30 +1,13 @@
-import React, { FC, useRef } from 'react';
-import Map, { MapRef } from 'react-map-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import './map.css';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import Reviews from './scenes/Reviews';
 
-const token = process.env.REACT_APP_MAPBOX_TOKEN;
-
-const App: FC = () => {
-	if (!token) throw new Error('Mapbox token not found');
-
-	const ref = useRef<MapRef>(null);
-
+function App() {
 	return (
-		<Map
-			ref={ref}
-			mapboxAccessToken={token}
-			interactive
-			mapStyle={'mapbox://styles/morganddoane/cm15g7rjn000k01nwcune9cm0'}
-			projection={{
-				name: 'globe',
-			}}
-			style={{
-				height: '100vh',
-				width: '100vw',
-			}}
-		/>
+		<Routes>
+			<Route index element={<Navigate to="reviews" />} />
+			<Route path="reviews/*" element={<Reviews />} />
+		</Routes>
 	);
-};
+}
 
 export default App;
