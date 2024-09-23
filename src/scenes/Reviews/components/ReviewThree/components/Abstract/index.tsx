@@ -1,6 +1,5 @@
 import { Box, Divider, Typography, useTheme } from '@mui/joy';
 import { FC } from 'react';
-import { FaArrowRight } from 'react-icons/fa';
 
 const Abstract: FC<{ p: number }> = ({ p }) => {
 	const { palette } = useTheme();
