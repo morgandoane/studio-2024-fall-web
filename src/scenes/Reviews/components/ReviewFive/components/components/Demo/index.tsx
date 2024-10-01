@@ -66,6 +66,7 @@ const Demo: FC = () => {
 						min={0}
 						max={100}
 					/>
+					<Box p={2} />
 					<Typography>Thickness</Typography>
 					<Slider
 						sx={{ p: 0 }}
