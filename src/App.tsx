@@ -1,13 +1,7 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-import Reviews from './scenes/Reviews';
+import { FC } from 'react';
 
-function App() {
-	return (
-		<Routes>
-			<Route index element={<Navigate to="reviews" />} />
-			<Route path="reviews/*" element={<Reviews />} />
-		</Routes>
-	);
-}
+const App: FC = () => {
+	return <div>App</div>;
+};
 
 export default App;
