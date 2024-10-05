@@ -31,6 +31,7 @@ const Testing: FC = () => {
 		demand: 100,
 		events: 6,
 		maxEvents: 10,
+		thk: 12,
 	});
 
 	return (

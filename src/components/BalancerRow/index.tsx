@@ -4,17 +4,19 @@ import { motion } from 'framer-motion';
 import { FC, useRef } from 'react';
 
 export interface BalancerRowProps {
-	balancers: Omit<BalancerProps, 'width' | 'maxEvents'>[];
+	balancers: Omit<BalancerProps, 'width' | 'maxEvents' | 'thk'>[];
 	maxEvents: number;
 	showStem?: boolean;
 	showGrid?: boolean;
+	thk: number;
 }
 
 const BalancerRow: FC<BalancerRowProps> = ({
 	balancers,
 	maxEvents,
-	showStem = false,
-	showGrid = false,
+	showStem = true,
+	showGrid = true,
+	thk,
 }) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const { width } = useSize(ref);
@@ -28,12 +30,18 @@ const BalancerRow: FC<BalancerRowProps> = ({
 
 		const x =
 			(width / balancers.length) * (index + 1) - width / balancers.length / 2;
-		const y = width / balancers.length - stemHeight;
+		const y =
+			stemHeight === 0
+				? width / balancers.length - thk / 2
+				: width / balancers.length - stemHeight;
 		return { x, y };
 	});
 
 	// Function to generate the 'd' attribute for the cubic Bezier path
-	const generateCubicPath = (points: { x: number; y: number }[]) => {
+	const generateCubicPath = (
+		points: { x: number; y: number }[],
+		closePath = false
+	) => {
 		if (points.length < 2) return '';
 
 		let path = `M ${points[0].x},${points[0].y}`;
@@ -45,10 +53,19 @@ const BalancerRow: FC<BalancerRowProps> = ({
 			path += ` C ${controlPointX},${prev.y} ${controlPointX},${current.y} ${current.x},${current.y}`;
 		}
 
+		if (closePath) {
+			// Extend the path to close the shape by connecting it to the bottom
+			path += ` L ${points[points.length - 1].x},${width / balancers.length}`; // Line down to bottom right
+			path += ` L ${points[0].x},${width / balancers.length}`; // Line across bottom to left
+			path += ' Z'; // Close the path
+		}
+
 		return path;
 	};
 
+	// Generate path data for the stroke and the filled area
 	const pathData = generateCubicPath(splinePoints);
+	const filledPathData = generateCubicPath(splinePoints, true); // Closed path for fill
 
 	return (
 		<motion.div
@@ -64,6 +81,17 @@ const BalancerRow: FC<BalancerRowProps> = ({
 				height={width / balancers.length}
 				style={{ position: 'absolute' }}
 			>
+				{/* Filled area under the curve */}
+				<motion.path
+					d={filledPathData}
+					fill="rgba(0, 0, 0, 0.04)"
+					stroke="none"
+					animate={{ d: filledPathData }} // Animate the 'd' attribute
+					transition={{
+						duration: 1, // Duration of the animation
+						ease: 'easeInOut', // Smoothing the animation
+					}}
+				/>
 				{/* Animate the path shape */}
 				<motion.path
 					d={pathData}
@@ -116,6 +144,7 @@ const BalancerRow: FC<BalancerRowProps> = ({
 					maxEvents={maxEvents}
 					key={`balancer-${index}`}
 					showStem={showStem}
+					thk={thk}
 				/>
 			))}
 		</motion.div>

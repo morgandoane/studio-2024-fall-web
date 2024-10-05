@@ -78,7 +78,7 @@ const Dashboard: FC = () => {
 				}}
 			>
 				<div style={{ flex: 1, maxWidth: '1200px', overflow: 'hidden' }}>
-					<BalancerMatrix data={state} />
+					<BalancerMatrix data={state} thk={16} />
 				</div>
 			</div>
 			<div style={{ height: '48px' }} />

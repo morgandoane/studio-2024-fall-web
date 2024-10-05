@@ -5,11 +5,19 @@ import { FC } from 'react';
 export interface BalancerMatrixProps {
 	data: {
 		year: number;
-		data: Omit<BalancerProps, 'width' | 'maxEvents'>[];
+		data: Omit<BalancerProps, 'width' | 'maxEvents' | 'thk'>[];
 	}[];
+	showStem?: boolean;
+	showGrid?: boolean;
+	thk: number;
 }
 
-const BalancerMatrix: FC<BalancerMatrixProps> = ({ data }) => {
+const BalancerMatrix: FC<BalancerMatrixProps> = ({
+	data,
+	showStem = true,
+	showGrid = false,
+	thk,
+}) => {
 	const sorted = data.sort((a, b) => a.year - b.year);
 	const maxEvents = Math.max(
 		...sorted.flatMap((item) => item.data.map((balancer) => balancer.events))
@@ -27,6 +35,9 @@ const BalancerMatrix: FC<BalancerMatrixProps> = ({ data }) => {
 					balancers={item.data}
 					maxEvents={maxEvents}
 					key={`balancer-row-${index}`}
+					showStem={showStem}
+					showGrid={showGrid}
+					thk={thk}
 				/>
 			))}
 		</div>

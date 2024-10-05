@@ -2,12 +2,34 @@ import { FC } from 'react';
 import { motion } from 'framer-motion';
 
 export interface BalancerProps {
+	/**
+	 * Width of the Balancer's container
+	 */
 	width: number;
+	/*
+	 * How much supply was available for this Balancer?
+	 */
 	supply: number;
+	/**
+	 * How much demand was there for this Balancer?
+	 */
 	demand: number;
+	/**
+	 * How many events were took place in this Balancer?
+	 */
 	events: number;
+	/**
+	 * The maximum number of events in any Balancer in the matrix
+	 */
 	maxEvents: number;
+	/**
+	 * Whether to show the stem or not
+	 */
 	showStem?: boolean;
+	/**
+	 * Thickness of the Balancer
+	 */
+	thk: number;
 }
 
 const toDegrees = (radians: number) => {
@@ -28,9 +50,9 @@ const Balancer: FC<BalancerProps> = ({
 	demand: demandInput,
 	events,
 	maxEvents,
-	showStem = false,
+	showStem = true,
+	thk,
 }) => {
-	const thk = width / 7.5;
 	const stroke = 2;
 
 	const stemHeight = getStemHeight(events, maxEvents, width);
@@ -41,8 +63,8 @@ const Balancer: FC<BalancerProps> = ({
 
 	const supplyRatio = supply / (supply + demand);
 	const demandRatio = demand / (supply + demand);
-	const supplyWidth = (width / 2) * supplyRatio * 1.25;
-	const demandWidth = (width / 2) * demandRatio * 1.25;
+	const supplyWidth = (width / 2) * supplyRatio;
+	const demandWidth = (width / 2) * demandRatio;
 
 	const getAngle = () => {
 		if (events === 0) return 0;
@@ -85,7 +107,8 @@ const Balancer: FC<BalancerProps> = ({
 				}}
 				transition={{ duration: 1, ease: 'easeInOut' }}
 			>
-				<motion.div
+				{/* Handle */}
+				{/* <motion.div
 					style={{
 						position: 'absolute',
 						height: `${thk * 1.5}px`,
@@ -105,7 +128,7 @@ const Balancer: FC<BalancerProps> = ({
 						),
 					}}
 					transition={{ duration: 1, ease: 'easeInOut' }}
-				/>
+				/> */}
 				<motion.div
 					style={{
 						position: 'relative',
@@ -120,38 +143,57 @@ const Balancer: FC<BalancerProps> = ({
 					<motion.div
 						style={{
 							width: `${supplyWidth + demandWidth - 2 * stroke}px`,
-							background: 'white',
 							height: `${thk - 2 * stroke}px`,
 							position: 'absolute',
-
 							top: `-${thk / 2}px`,
 							borderRadius: `${thk / 2}px`,
 							overflow: 'hidden',
 							border: `${stroke}px solid black`,
 						}}
-						animate={{ left: `${-supplyWidth}px` }}
+						animate={{
+							left: `${-supplyWidth}px`,
+							background:
+								demand > supply
+									? getColorAlongGradient(
+											0,
+											1,
+											supplyRatio,
+											['#2D7D41', '#3BA556', '#D5D052', '#E43B3B'].reverse()
+									  )
+									: 'rgb(255, 255, 255)',
+						}}
 						transition={{ duration: 1, ease: 'easeInOut' }}
 					>
+						{/* Supply */}
 						<motion.div
 							style={{
-								background: 'black',
 								height: '100%',
 							}}
-							animate={{ width: `${supplyWidth}px` }}
+							animate={{
+								width: `${supplyWidth}px`,
+								background:
+									supply > demand
+										? getColorAlongGradient(
+												0,
+												1,
+												supplyRatio,
+												['#2D7D41', '#3BA556', '#D5D052', '#E43B3B'].reverse()
+										  )
+										: 'rgb(255, 255, 255)',
+							}}
 							transition={{ duration: 1, ease: 'easeInOut' }}
-						></motion.div>
+						/>
 					</motion.div>
 				</motion.div>
 			</motion.div>
 			{/* Stem */}
 			<motion.div
 				style={{
-					width: `${thk - 2 * stroke}px`,
-					background: `rgba(0,0,0,0.1)`,
+					width: `${thk}px`,
+					background: `rgb(200, 200, 200)`,
 					position: 'absolute',
 					left: `${width / 2 - (thk - 2 * stroke) / 2}px`,
 					bottom: 0,
-					border: `${stroke}px solid black`,
 				}}
 				animate={{
 					height: showStem ? `${stemHeight}px` : '0px',
