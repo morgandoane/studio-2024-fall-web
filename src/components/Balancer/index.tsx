@@ -68,8 +68,8 @@ const Balancer: FC<BalancerProps> = ({
 
 	const supplyRatio = supply / (supply + demand);
 	const demandRatio = demand / (supply + demand);
-	const supplyWidth = (width / 2) * supplyRatio;
-	const demandWidth = (width / 2) * demandRatio;
+	const supplyWidth = (width / 2) * supplyRatio * 1.125;
+	const demandWidth = (width / 2) * demandRatio * 1.125;
 
 	const getAngle = () => {
 		if (events === 0) return 0;
@@ -196,10 +196,12 @@ const Balancer: FC<BalancerProps> = ({
 			<motion.div
 				style={{
 					width: `${thk}px`,
-					background: `rgb(200, 200, 200)`,
+					background: `rgb(50, 50, 50)`,
 					position: 'absolute',
 					left: `${width / 2 - (thk - 2 * stroke) / 2}px`,
 					bottom: 0,
+					borderTopLeftRadius: `${thk / 2}px`,
+					borderTopRightRadius: `${thk / 2}px`,
 				}}
 				animate={{
 					height: showStem ? `${stemHeight}px` : '0px',
