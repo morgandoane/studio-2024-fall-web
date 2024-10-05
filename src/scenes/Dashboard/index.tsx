@@ -36,7 +36,7 @@ const Dashboard: FC = () => {
 					};
 				});
 			});
-		}, 2000);
+		}, 5000);
 
 		// return a cleanup function to clear the interval
 		return () => {
@@ -46,17 +46,42 @@ const Dashboard: FC = () => {
 
 	return (
 		<div>
-			<div></div>
+			<div style={{ height: '24px' }} />
 			<div
 				style={{
 					display: 'flex',
 					justifyContent: 'center',
 				}}
 			>
-				<div style={{ flex: 1, maxWidth: '900px' }}>
+				<div style={{ flex: 1, maxWidth: '1200px', textAlign: 'center' }}>
+					<h1
+						className="display"
+						style={{
+							whiteSpace: 'pre-line',
+						}}
+					>
+						{`Korea Red Cross Events
+						and Their Impacts`}
+					</h1>
+					<h3>
+						Discovering whether a policy was impactful is always a difficult
+						task. In this data visualization we attempt to visualize the policy
+						and its impact through a case study in Korea Red Cross.
+					</h3>
+				</div>
+			</div>
+			<div style={{ height: '24px' }} />
+			<div
+				style={{
+					display: 'flex',
+					justifyContent: 'center',
+				}}
+			>
+				<div style={{ flex: 1, maxWidth: '1200px', overflow: 'hidden' }}>
 					<BalancerMatrix data={state} />
 				</div>
 			</div>
+			<div style={{ height: '48px' }} />
 		</div>
 	);
 };

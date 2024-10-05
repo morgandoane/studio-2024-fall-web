@@ -1,6 +1,7 @@
 import Balancer, { BalancerProps, getStemHeight } from '@components/Balancer';
+import { useSize } from '@hooks/useSize';
 import { motion } from 'framer-motion';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useRef } from 'react';
 
 export interface BalancerRowProps {
 	balancers: Omit<BalancerProps, 'width' | 'maxEvents'>[];
@@ -16,29 +17,7 @@ const BalancerRow: FC<BalancerRowProps> = ({
 	showGrid = false,
 }) => {
 	const ref = useRef<HTMLDivElement>(null);
-
-	const [width, setWidth] = useState(() => {
-		return ref.current?.offsetWidth ?? 0;
-	});
-
-	useEffect(() => {
-		if (ref.current) {
-			// attach a resize observer to the ref
-
-			const observer = new ResizeObserver((entries) => {
-				for (const entry of entries) {
-					setWidth(entry.contentRect.width);
-				}
-			});
-
-			observer.observe(ref.current);
-
-			// return a cleanup function to disconnect the observer
-			return () => {
-				observer.disconnect();
-			};
-		}
-	}, []);
+	const { width } = useSize(ref);
 
 	const splinePoints = balancers.map((balancer, index) => {
 		const stemHeight = getStemHeight(
@@ -77,6 +56,7 @@ const BalancerRow: FC<BalancerRowProps> = ({
 			style={{
 				display: 'flex',
 				position: 'relative',
+				maxWidth: '100%',
 			}}
 		>
 			<svg

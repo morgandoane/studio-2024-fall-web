@@ -7,5 +7,215 @@
 }
 
 body {
+	overflow-x: hidden;
 	margin: 0;
+	font-family: 'Satoshi', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Display */
+.display {
+	font-family: 'Satoshi';
+	font-weight: 900; /* Black */
+	font-size: 48px;
+	line-height: 1.2;
+	letter-spacing: -0.5px;
+}
+
+/* Heading 1 */
+h1 {
+	font-family: 'Satoshi';
+	font-weight: 700; /* Bold */
+	font-size: 36px;
+	line-height: 1.2;
+	letter-spacing: -0.5px;
+}
+
+/* Heading 2 */
+h2 {
+	font-family: 'Satoshi';
+	font-weight: 700; /* Bold */
+	font-size: 30px;
+	line-height: 1.3;
+	letter-spacing: -0.4px;
+}
+
+/* Heading 3 */
+h3 {
+	font-family: 'Satoshi';
+	font-weight: 500; /* Medium */
+	font-size: 24px;
+	line-height: 1.4;
+	letter-spacing: -0.3px;
+}
+
+/* Heading 4 */
+h4 {
+	font-family: 'Satoshi';
+	font-weight: 500; /* Medium */
+	font-size: 20px;
+	line-height: 1.5;
+	letter-spacing: -0.2px;
+}
+
+/* Heading 5 */
+h5 {
+	font-family: 'Satoshi';
+	font-weight: 400; /* Regular */
+	font-size: 18px;
+	line-height: 1.5;
+	letter-spacing: -0.1px;
+}
+
+/* Heading 6 */
+h6 {
+	font-family: 'Satoshi';
+	font-weight: 400; /* Regular */
+	font-size: 16px;
+	line-height: 1.6;
+	letter-spacing: 0;
+}
+
+/* Lead Text */
+.lead {
+	font-family: 'Satoshi';
+	font-weight: 300; /* Light */
+	font-size: 20px;
+	line-height: 1.6;
+	color: #333;
+}
+
+/* Body Text - Large */
+.body-large {
+	font-family: 'Satoshi';
+	font-weight: 400; /* Regular */
+	font-size: 18px;
+	line-height: 1.6;
+	color: #444;
+}
+
+/* Body Text - Medium (default) */
+.body-medium {
+	font-family: 'Satoshi';
+	font-weight: 400; /* Regular */
+	font-size: 16px;
+	line-height: 1.6;
+	color: #555;
+}
+
+/* Body Text - Small */
+.body-small {
+	font-family: 'Satoshi';
+	font-weight: 400; /* Regular */
+	font-size: 14px;
+	line-height: 1.5;
+	color: #666;
+}
+
+/* Caption */
+.caption {
+	font-family: 'Satoshi';
+	font-weight: 300; /* Light */
+	font-size: 12px;
+	line-height: 1.4;
+	color: #777;
+}
+
+/* Buttons */
+.button-large {
+	font-family: 'Satoshi';
+	font-weight: 700; /* Bold */
+	font-size: 16px;
+	line-height: 1.2;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.button-medium {
+	font-family: 'Satoshi';
+	font-weight: 700; /* Bold */
+	font-size: 14px;
+	line-height: 1.2;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.button-small {
+	font-family: 'Satoshi';
+	font-weight: 700; /* Bold */
+	font-size: 12px;
+	line-height: 1.2;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-Regular.otf') format('opentype');
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-Bold.otf') format('opentype');
+	font-weight: 700;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-Italic.otf') format('opentype');
+	font-weight: 400;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-BoldItalic.otf') format('opentype');
+	font-weight: 700;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-Light.otf') format('opentype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-LightItalic.otf') format('opentype');
+	font-weight: 300;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-Black.otf') format('opentype');
+	font-weight: 900;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-BlackItalic.otf') format('opentype');
+	font-weight: 900;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-Medium.otf') format('opentype');
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Satoshi';
+	src: url('./typography/Satoshi/Satoshi-MediumItalic.otf') format('opentype');
+	font-weight: 500;
+	font-style: italic;
 }

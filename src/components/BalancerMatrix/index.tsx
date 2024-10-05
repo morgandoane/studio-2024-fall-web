@@ -1,6 +1,6 @@
 import { BalancerProps } from '@components/Balancer';
 import BalancerRow from '@components/BalancerRow';
-import { FC, useRef } from 'react';
+import { FC } from 'react';
 
 export interface BalancerMatrixProps {
 	data: {
@@ -15,13 +15,11 @@ const BalancerMatrix: FC<BalancerMatrixProps> = ({ data }) => {
 		...sorted.flatMap((item) => item.data.map((balancer) => balancer.events))
 	);
 
-	const ref = useRef<HTMLDivElement>(null);
-
 	return (
 		<div
-			ref={ref}
 			style={{
 				position: 'relative',
+				paddingBottom: '8px',
 			}}
 		>
 			{sorted.map((item, index) => (
