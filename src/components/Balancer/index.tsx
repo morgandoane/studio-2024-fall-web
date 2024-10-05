@@ -30,6 +30,10 @@ export interface BalancerProps {
 	 * Thickness of the Balancer
 	 */
 	thk: number;
+	/**
+	 * Function to call when the Balancer is clicked
+	 */
+	onClick?: () => void;
 }
 
 const toDegrees = (radians: number) => {
@@ -52,6 +56,7 @@ const Balancer: FC<BalancerProps> = ({
 	maxEvents,
 	showStem = true,
 	thk,
+	onClick,
 }) => {
 	const stroke = 2;
 
@@ -141,6 +146,7 @@ const Balancer: FC<BalancerProps> = ({
 					transition={{ duration: 1, ease: 'easeInOut' }}
 				>
 					<motion.div
+						onClick={onClick}
 						style={{
 							width: `${supplyWidth + demandWidth - 2 * stroke}px`,
 							height: `${thk - 2 * stroke}px`,

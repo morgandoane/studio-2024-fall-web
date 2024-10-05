@@ -9,6 +9,7 @@ export interface BalancerRowProps {
 	showStem?: boolean;
 	showGrid?: boolean;
 	thk: number;
+	onClick?: (index: number) => void;
 }
 
 const BalancerRow: FC<BalancerRowProps> = ({
@@ -17,6 +18,7 @@ const BalancerRow: FC<BalancerRowProps> = ({
 	showStem = true,
 	showGrid = true,
 	thk,
+	onClick,
 }) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const { width } = useSize(ref);
@@ -145,6 +147,9 @@ const BalancerRow: FC<BalancerRowProps> = ({
 					key={`balancer-${index}`}
 					showStem={showStem}
 					thk={thk}
+					onClick={() => {
+						if (onClick) onClick(index + 1);
+					}}
 				/>
 			))}
 		</motion.div>

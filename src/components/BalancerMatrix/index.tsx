@@ -10,6 +10,7 @@ export interface BalancerMatrixProps {
 	showStem?: boolean;
 	showGrid?: boolean;
 	thk: number;
+	onClick?: (year: number, month: number) => void;
 }
 
 const BalancerMatrix: FC<BalancerMatrixProps> = ({
@@ -17,6 +18,7 @@ const BalancerMatrix: FC<BalancerMatrixProps> = ({
 	showStem = true,
 	showGrid = false,
 	thk,
+	onClick,
 }) => {
 	const sorted = data.sort((a, b) => a.year - b.year);
 	const maxEvents = Math.max(
@@ -38,6 +40,7 @@ const BalancerMatrix: FC<BalancerMatrixProps> = ({
 					showStem={showStem}
 					showGrid={showGrid}
 					thk={thk}
+					onClick={(month) => onClick?.(item.year, month)}
 				/>
 			))}
 		</div>
