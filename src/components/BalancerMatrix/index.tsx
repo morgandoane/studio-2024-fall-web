@@ -34,6 +34,7 @@ const BalancerMatrix: FC<BalancerMatrixProps> = ({
 		>
 			{sorted.map((item, index) => (
 				<BalancerRow
+					year={item.year}
 					balancers={item.data}
 					maxEvents={maxEvents}
 					key={`balancer-row-${index}`}

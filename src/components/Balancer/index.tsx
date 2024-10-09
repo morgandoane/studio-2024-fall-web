@@ -45,6 +45,7 @@ export const getStemHeight = (
 	maxEvents: number,
 	width: number
 ) => {
+	// return 0;
 	return (((events / maxEvents) * width) / 2) * 1.25;
 };
 
@@ -61,10 +62,10 @@ const Balancer: FC<BalancerProps> = ({
 	const stroke = 2;
 
 	const stemHeight = getStemHeight(events, maxEvents, width);
-	const max = Math.max(supplyInput, demandInput);
+	const max = Math.max(Math.round(supplyInput), Math.round(demandInput));
 	const min = Math.round(max / 10);
-	const supply = Math.max(min, supplyInput);
-	const demand = Math.max(min, demandInput);
+	const supply = Math.max(min, Math.round(supplyInput));
+	const demand = Math.max(min, Math.round(demandInput));
 
 	const supplyRatio = supply / (supply + demand);
 	const demandRatio = demand / (supply + demand);
@@ -106,6 +107,7 @@ const Balancer: FC<BalancerProps> = ({
 					left: `calc(50% + ${stroke}px)`,
 					zIndex: 10,
 					bottom: 0,
+					perspective: '1000px',
 				}}
 				animate={{
 					bottom: Math.max(stemHeight, thk / 2),
@@ -152,7 +154,7 @@ const Balancer: FC<BalancerProps> = ({
 							height: `${thk - 2 * stroke}px`,
 							position: 'absolute',
 							top: `-${thk / 2}px`,
-							borderRadius: `${thk / 2}px`,
+							// borderRadius: `${thk / 2}px`,
 							overflow: 'hidden',
 							border: `${stroke}px solid black`,
 						}}
@@ -164,7 +166,7 @@ const Balancer: FC<BalancerProps> = ({
 											0,
 											1,
 											supplyRatio,
-											['#2D7D41', '#3BA556', '#D5D052', '#E43B3B'].reverse()
+											['#D5D052', '#DD8647', '#E43B3B'].reverse()
 									  )
 									: 'rgb(255, 255, 255)',
 						}}
@@ -183,7 +185,7 @@ const Balancer: FC<BalancerProps> = ({
 												0,
 												1,
 												supplyRatio,
-												['#2D7D41', '#3BA556', '#D5D052', '#E43B3B'].reverse()
+												['#2D7D41', '#3BA556', '#D5D052', '#D5D052'].reverse()
 										  )
 										: 'rgb(255, 255, 255)',
 							}}
@@ -200,8 +202,8 @@ const Balancer: FC<BalancerProps> = ({
 					position: 'absolute',
 					left: `${width / 2 - (thk - 2 * stroke) / 2}px`,
 					bottom: 0,
-					borderTopLeftRadius: `${thk / 2}px`,
-					borderTopRightRadius: `${thk / 2}px`,
+					// borderTopLeftRadius: `${thk / 2}px`,
+					// borderTopRightRadius: `${thk / 2}px`,
 				}}
 				animate={{
 					height: showStem ? `${stemHeight}px` : '0px',

@@ -9,6 +9,7 @@ export interface BalancerRowProps {
 	showStem?: boolean;
 	showGrid?: boolean;
 	thk: number;
+	year: number;
 	onClick?: (index: number) => void;
 }
 
@@ -19,6 +20,7 @@ const BalancerRow: FC<BalancerRowProps> = ({
 	showGrid = true,
 	thk,
 	onClick,
+	year,
 }) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const { width } = useSize(ref);
@@ -78,6 +80,18 @@ const BalancerRow: FC<BalancerRowProps> = ({
 				maxWidth: '100%',
 			}}
 		>
+			<p
+				style={{
+					position: 'absolute',
+					bottom: 12,
+					left: 0,
+					zIndex: 10,
+					fontSize: '12px',
+					fontWeight: 'bold',
+				}}
+			>
+				{year}
+			</p>
 			<svg
 				width={width}
 				height={width / balancers.length}
