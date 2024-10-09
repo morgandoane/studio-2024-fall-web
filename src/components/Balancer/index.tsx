@@ -150,6 +150,7 @@ const Balancer: FC<BalancerProps> = ({
 					<motion.div
 						onClick={onClick}
 						style={{
+							cursor: onClick ? 'pointer' : 'default',
 							width: `${supplyWidth + demandWidth - 2 * stroke}px`,
 							height: `${thk - 2 * stroke}px`,
 							position: 'absolute',

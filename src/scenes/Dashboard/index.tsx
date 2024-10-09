@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import MatrixView from './components/MatrixView';
 import DetailView from './components/DetailView';
 import { useSearchParams } from 'react-router-dom';
@@ -26,6 +26,56 @@ const Dashboard: FC = () => {
 			: null,
 		city: searchParams.get('city'),
 	};
+
+	useEffect(() => {
+		// right and left key => change month
+		// up and down key => change year
+		// escape key => clear year and month
+
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === 'ArrowRight') {
+				if (dashboardState.month && dashboardState.month < 12) {
+					setDashboardState({
+						...dashboardState,
+						month: dashboardState.month + 1,
+					});
+				}
+			} else if (e.key === 'ArrowLeft') {
+				if (dashboardState.month && dashboardState.month > 1) {
+					setDashboardState({
+						...dashboardState,
+						month: dashboardState.month - 1,
+					});
+				}
+			} else if (e.key === 'ArrowUp') {
+				if (dashboardState.year) {
+					setDashboardState({
+						...dashboardState,
+						year: dashboardState.year + 1,
+					});
+				}
+			} else if (e.key === 'ArrowDown') {
+				if (dashboardState.year) {
+					setDashboardState({
+						...dashboardState,
+						year: dashboardState.year - 1,
+					});
+				}
+			} else if (e.key === 'Escape') {
+				setDashboardState({
+					...dashboardState,
+					year: null,
+					month: null,
+				});
+			}
+		};
+
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [dashboardState]);
 
 	const setDashboardState = (dashboardState: DashboardState) => {
 		if (dashboardState.year) {
@@ -68,11 +118,13 @@ const Dashboard: FC = () => {
 				}}
 			>
 				<div style={{ flex: 1, maxWidth: '1200px' }}>
-					<Header collapsed={scrollPosition !== 0} />
+					<Header />
+					<div style={{ height: '16px' }} />
 					<Filters
 						dashboardState={dashboardState}
 						setDashboardState={setDashboardState}
 					/>
+					<div style={{ height: '16px' }} />
 				</div>
 			</div>
 			<div

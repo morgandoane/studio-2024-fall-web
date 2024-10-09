@@ -1,15 +1,14 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
 
-export interface HeaderProps {
-	collapsed: boolean;
-}
-
-const Header: FC<HeaderProps> = ({ collapsed }) => {
+const Header: FC = () => {
 	return (
 		<div
 			style={{
 				textAlign: 'center',
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'center',
+				alignItems: 'center',
 			}}
 		>
 			<h1
@@ -21,21 +20,16 @@ const Header: FC<HeaderProps> = ({ collapsed }) => {
 				{`Korea Red Cross Events
 						and Their Impacts`}
 			</h1>
-			<motion.div
-				style={{ overflow: 'hidden' }}
-				variants={{
-					collapsed: { height: 0 },
-					expanded: { height: 'auto' },
+			<div style={{ height: '16px' }} />
+			<h5
+				style={{
+					maxWidth: '800px',
 				}}
-				initial="expanded"
-				animate={collapsed ? 'collapsed' : 'expanded'}
 			>
-				<h3>
-					Discovering whether a policy was impactful is always a difficult task.
-					In this data visualization we attempt to visualize the policy and its
-					impact through a case study in Korea Red Cross.
-				</h3>
-			</motion.div>
+				Discovering whether a policy was impactful is always a difficult task.
+				In this data visualization we attempt to visualize the policy and its
+				impact through a case study in Korea Red Cross.
+			</h5>
 		</div>
 	);
 };

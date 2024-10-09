@@ -1,12 +1,21 @@
 import { useState, useEffect, RefObject } from 'react';
 
 export const useSize = (
-	ref: RefObject<HTMLElement>,
-	defaultSize: { width: number; height: number } = { width: 100, height: 100 } // default values
+	ref: RefObject<HTMLElement>
 ): { width: number; height: number } => {
-	const [size, setSize] = useState<{ width: number; height: number }>(
-		defaultSize
-	);
+	const [size, setSize] = useState<{ width: number; height: number }>(() => {
+		if (ref.current) {
+			return {
+				width: ref.current.offsetWidth,
+				height: ref.current.offsetHeight,
+			};
+		}
+
+		return {
+			width: 0,
+			height: 0,
+		};
+	});
 
 	useEffect(() => {
 		const updateSize = () => {

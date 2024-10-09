@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import BalancerMatrix, {
 	BalancerMatrixProps,
 } from '@components/BalancerMatrix';
@@ -76,6 +75,7 @@ const MatrixView: FC<{
 							setDashboardState({
 								...dashboardState,
 								year,
+								month,
 							});
 						}}
 					/>
