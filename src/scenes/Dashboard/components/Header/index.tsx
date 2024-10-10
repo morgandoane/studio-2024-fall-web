@@ -9,8 +9,10 @@ const Header: FC = () => {
 				flexDirection: 'column',
 				justifyContent: 'center',
 				alignItems: 'center',
+				position: 'relative',
 			}}
 		>
+			<div style={{ height: '16px' }} />
 			<h1
 				className="display"
 				style={{

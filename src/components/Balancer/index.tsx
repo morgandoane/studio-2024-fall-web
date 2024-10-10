@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { motion } from 'framer-motion';
+import { FC, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export interface BalancerProps {
 	/**
@@ -60,6 +60,8 @@ const Balancer: FC<BalancerProps> = ({
 	onClick,
 }) => {
 	const stroke = 2;
+
+	const [hovered, setHovered] = useState(false);
 
 	const stemHeight = getStemHeight(events, maxEvents, width);
 	const max = Math.max(Math.round(supplyInput), Math.round(demandInput));
@@ -147,15 +149,60 @@ const Balancer: FC<BalancerProps> = ({
 					}}
 					transition={{ duration: 1, ease: 'easeInOut' }}
 				>
+					<AnimatePresence>
+						{hovered && (
+							<motion.div
+								style={{
+									position: 'absolute',
+									top: '-40px',
+									left: '-40px',
+									width: '80px',
+									height: '80px',
+									background: 'rgba(0, 0, 0, 0.8)',
+									borderRadius: '50%',
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'center',
+									color: 'white',
+									fontSize: '1rem',
+									fontWeight: 'bold',
+								}}
+								initial={{
+									scale: 0,
+								}}
+								animate={{
+									scale: 1,
+								}}
+								exit={{
+									scale: 0,
+								}}
+								transition={{
+									duration: 0.5,
+									ease: 'easeInOut',
+								}}
+							>
+								<div>
+									<p style={{ paddingRight: '12px' }}>
+										{supplyRatio.toFixed(2)}
+									</p>
+									<p style={{ paddingLeft: '12px' }}>
+										{demandRatio.toFixed(2)}
+									</p>
+								</div>
+							</motion.div>
+						)}
+					</AnimatePresence>
 					<motion.div
 						onClick={onClick}
+						onMouseEnter={() => setHovered(true)}
+						onMouseLeave={() => setHovered(false)}
 						style={{
 							cursor: onClick ? 'pointer' : 'default',
 							width: `${supplyWidth + demandWidth - 2 * stroke}px`,
 							height: `${thk - 2 * stroke}px`,
 							position: 'absolute',
 							top: `-${thk / 2}px`,
-							// borderRadius: `${thk / 2}px`,
+							borderRadius: `${thk / 6}px`,
 							overflow: 'hidden',
 							border: `${stroke}px solid black`,
 						}}

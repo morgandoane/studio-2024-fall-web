@@ -29,9 +29,39 @@ const BalancerMatrix: FC<BalancerMatrixProps> = ({
 		<div
 			style={{
 				position: 'relative',
-				paddingBottom: '8px',
 			}}
 		>
+			<div
+				style={{
+					paddingTop: '8px',
+				}}
+			>
+				{[
+					'Jan',
+					'Feb',
+					'Mar',
+					'Apr',
+					'May',
+					'Jun',
+					'Jul',
+					'Aug',
+					'Sep',
+					'Oct',
+					'Nov',
+					'Dec',
+				].map((month, index) => (
+					<div
+						key={`balancer-month-${index}`}
+						style={{
+							display: 'inline-block',
+							width: `${100 / 12}%`,
+							textAlign: 'center',
+						}}
+					>
+						{month}
+					</div>
+				))}
+			</div>
 			{sorted.map((item, index) => (
 				<BalancerRow
 					year={item.year}

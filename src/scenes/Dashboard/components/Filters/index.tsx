@@ -9,7 +9,22 @@ export interface FiltersProps {
 // 2006 through 2022
 const years = Array.from({ length: 17 }, (_, i) => i + 2006);
 
-const cities = ['Seoul', 'Busan', 'Daegu', 'Incheon', 'Gwangju', 'Daejeon'];
+const cities = [
+	'Busan',
+	'Chungbuk',
+	'Daegu/Gyeongbuk',
+	'Daejeon/Chungnam',
+	'Gangwon',
+	'Gyeonggi',
+	'Gyeongnam',
+	'Incheon',
+	'Jeju',
+	'Jeonam',
+	'Jeonbuk',
+	'Jeonnam',
+	'Seoul',
+	'Ulsan',
+];
 
 const Filters: FC<FiltersProps> = ({ dashboardState, setDashboardState }) => {
 	return (
@@ -19,6 +34,7 @@ const Filters: FC<FiltersProps> = ({ dashboardState, setDashboardState }) => {
 				justifyContent: 'center',
 				alignItems: 'center',
 				gap: '16px',
+				position: 'relative',
 			}}
 		>
 			<button
@@ -61,6 +77,47 @@ const Filters: FC<FiltersProps> = ({ dashboardState, setDashboardState }) => {
 					</option>
 				))}
 			</select>
+			<div
+				style={{
+					position: 'absolute',
+					right: '0',
+				}}
+			>
+				{/* '#D5D052', '#DD8647', '#E43B3B' */}
+				<div
+					style={{
+						height: '16px',
+						width: '96px',
+						background: 'linear-gradient(to right, #3BA556, #D5D052, #E43B3B)',
+						borderRadius: '2px',
+					}}
+				></div>
+				<div
+					style={{
+						display: 'flex',
+						justifyContent: 'space-between',
+					}}
+				>
+					<p
+						style={{
+							fontSize: '.75rem',
+							padding: 0,
+							margin: 0,
+						}}
+					>
+						Healthy
+					</p>
+					<p
+						style={{
+							fontSize: '.75rem',
+							padding: 0,
+							margin: 0,
+						}}
+					>
+						Risky
+					</p>
+				</div>
+			</div>
 		</div>
 	);
 };
