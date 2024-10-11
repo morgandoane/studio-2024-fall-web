@@ -18,6 +18,7 @@ interface CanvasRowProps {
 
 const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const multiBeatCanvasRef = useRef<MultiBeatCanvas | null>(null);
 
   const gotContainer = useCallback((element: HTMLDivElement) => {
     if (!element) {
@@ -30,7 +31,6 @@ const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
     if (!container) {
       return;
     }
-    console.log("jijiji");
     const maxSupply = Math.max(...balancers.map((b) => b.supply));
     const maxDemand = Math.max(...balancers.map((b) => b.demand));
     const normalizedSupply = balancers.map((b) => b.supply / maxSupply);
@@ -39,6 +39,7 @@ const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
       const width = container.clientWidth;
       const height = width / 12;
       const multiBeatCanvas = new MultiBeatCanvas(p5, width, height, balancers);
+      multiBeatCanvasRef.current = multiBeatCanvas;
       const setup = () => {
         p5.createCanvas(width, height);
         p5.background(0);
@@ -53,7 +54,11 @@ const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
     return () => {
       canvas.remove();
     };
-  }, [container, balancers]);
+  }, [container]);
+
+  useEffect(() => {
+    multiBeatCanvasRef.current?.setData(balancers);
+  }, [balancers]);
 
   return (
     <div

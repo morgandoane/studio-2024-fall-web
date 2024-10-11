@@ -7,6 +7,8 @@ export class MultiBeatCanvas {
   height: number;
   width: number;
   singleBeats: SingleBeatCanvas[];
+  data: Omit<BalancerProps, "width" | "maxEvents" | "thk">[];
+  animationTotalFrameRate: number = 600;
 
   constructor(
     p5: p5,
@@ -17,6 +19,10 @@ export class MultiBeatCanvas {
     this.p5 = p5;
     this.width = width;
     this.height = height;
+    const maxSupply = Math.max(...data.map((b) => b.supply));
+    const minSupply = Math.min(...data.map((b) => b.supply));
+    const maxDemand = Math.max(...data.map((b) => b.demand));
+    const minDemand = Math.min(...data.map((b) => b.demand));
     this.singleBeats = Array.from({ length: 12 }, (_, i) => {
       return new SingleBeatCanvas({
         p5,
@@ -27,11 +33,42 @@ export class MultiBeatCanvas {
         supply: data[i].supply,
         demand: data[i].demand,
         events: data[i].events,
+        maxSupply,
+        minSupply,
+        maxDemand,
+        minDemand,
+        month: i + 1,
+        animationTotalFrameRate: this.animationTotalFrameRate / 12,
+      });
+    });
+    this.data = data;
+  }
+
+  preprocessData(data: Omit<BalancerProps, "width" | "maxEvents" | "thk">[]) {
+    const maxSupply = Math.max(...data.map((b) => b.supply));
+    const minSupply = Math.min(...data.map((b) => b.supply));
+    const maxDemand = Math.max(...data.map((b) => b.demand));
+    const minDemand = Math.min(...data.map((b) => b.demand));
+    this.singleBeats.forEach((singleBeat, i) => {
+      singleBeat.changeData({
+        supply: data[i].supply,
+        demand: data[i].demand,
+        events: data[i].events,
+        maxSupply,
+        minSupply,
+        maxDemand,
+        minDemand,
       });
     });
   }
 
+  setData(data: Omit<BalancerProps, "width" | "maxEvents" | "thk">[]) {
+    this.data = data;
+    this.preprocessData(data);
+  }
+
   render() {
+    // console.log(frameCount);
     this.p5.clear();
     for (let i = 0; i < this.singleBeats.length; i++) {
       this.singleBeats[i].render();
