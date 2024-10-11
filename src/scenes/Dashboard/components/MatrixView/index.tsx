@@ -7,9 +7,13 @@ import { useDemand } from "@data/demand/useDemand";
 import { useEvents } from "@data/events/useEvents";
 import { Supply } from "@data/supply/Supply";
 import { DashboardState } from "@scenes/Dashboard";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useMemo } from "react";
 import { Demand } from "@data/demand/Demand";
 import { Event } from "@data/events/Event";
+
+// 2006 through 2022
+const years = Array.from({ length: 17 }, (_, i) => i + 2006);
+const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 const MatrixView: FC<{
   dashboardState: DashboardState;
@@ -43,15 +47,12 @@ const MatrixView: FC<{
 
   const { data: events, loading: eventsLoading } = useEvents(eventFilter);
 
-  const loading = supplyLoading || eventsLoading || demandLoading;
+  const loading = useMemo(
+    () => supplyLoading || eventsLoading || demandLoading,
+    [supplyLoading, eventsLoading, demandLoading]
+  );
 
-  if (loading) return <div />;
-
-  // 2006 through 2022
-  const years = Array.from({ length: 17 }, (_, i) => i + 2006);
-  const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-
-  const getData = (): BalancerMatrixProps["data"] => {
+  const nodes = useMemo(() => {
     const res: BalancerMatrixProps["data"] = [];
 
     for (const year of years) {
@@ -72,9 +73,7 @@ const MatrixView: FC<{
     }
 
     return res;
-  };
-
-  const nodes = getData();
+  }, [supply, demand, events]);
 
   return (
     <div>

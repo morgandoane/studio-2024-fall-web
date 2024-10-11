@@ -17,7 +17,6 @@ interface CanvasRowProps {
 }
 
 const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
   const gotContainer = useCallback((element: HTMLDivElement) => {
@@ -31,8 +30,12 @@ const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
     if (!container) {
       return;
     }
+    console.log("jijiji");
+    const maxSupply = Math.max(...balancers.map((b) => b.supply));
+    const maxDemand = Math.max(...balancers.map((b) => b.demand));
+    const normalizedSupply = balancers.map((b) => b.supply / maxSupply);
+    const normalizedDemand = balancers.map((b) => b.demand / maxDemand);
     const canvas = new P5((p5: P5) => {
-      console.log("hihi");
       const width = container.clientWidth;
       const height = width / 12;
       const multiBeatCanvas = new MultiBeatCanvas(p5, width, height, balancers);
@@ -50,7 +53,7 @@ const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
     return () => {
       canvas.remove();
     };
-  }, [container]);
+  }, [container, balancers]);
 
   return (
     <div

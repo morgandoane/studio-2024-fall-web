@@ -1,6 +1,6 @@
 import { BalancerProps } from "@components/Balancer";
 import CanvasRow from "@components/CanvasRow";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 export interface CanvasMatrixProps {
   data: {
@@ -10,9 +10,15 @@ export interface CanvasMatrixProps {
 }
 
 const CanvasMatrix: FC<CanvasMatrixProps> = ({ data }) => {
-  const sorted = data.sort((a, b) => a.year - b.year);
-  const maxEvents = Math.max(
-    ...sorted.flatMap((item) => item.data.map((balancer) => balancer.events))
+  const sorted = useMemo(() => data.sort((a, b) => a.year - b.year), [data]);
+  const maxEvents = useMemo(
+    () =>
+      Math.max(
+        ...sorted.flatMap((item) =>
+          item.data.map((balancer) => balancer.events)
+        )
+      ),
+    [sorted]
   );
   return (
     <div>
