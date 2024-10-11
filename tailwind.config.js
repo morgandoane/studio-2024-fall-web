@@ -4,19 +4,46 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				display: ['Satoshi', 'sans-serif'],
-				heading: ['Satoshi', 'sans-serif'],
-				body: ['Satoshi', 'sans-serif'],
+				sans: ['Satoshi', 'sans-serif'],
+			},
+			colors: {
+				textPrimary: '#1a1a1a', // Dark text for good contrast
+				textSecondary: '#4a4a4a', // Slightly lighter for secondary text
 			},
 			fontSize: {
-				display: ['5rem', { lineHeight: '1.1' }], // Custom display size
-				'heading-1': ['3.75rem', { lineHeight: '1.2', fontWeight: 900 }],
-				'heading-2': ['3rem', { lineHeight: '1.3', fontWeight: 800 }],
-				'heading-3': ['2.5rem', { lineHeight: '1.35', fontWeight: 800 }],
-				'heading-4': ['2rem', { lineHeight: '1.4', fontWeight: 800 }],
-				'body-large': ['1.125rem', { lineHeight: '1.75', fontWeight: 500 }],
-				'body-medium': ['1rem', { lineHeight: '1.75', fontWeight: 500 }],
-				'body-small': ['0.875rem', { lineHeight: '1.5', fontWeight: 500 }],
+				'heading-1': [
+					'2.5rem',
+					{ lineHeight: '1.2', letterSpacing: '-0.02em', fontWeight: 800 },
+				], // 40px
+				'heading-2': [
+					'2.25rem',
+					{ lineHeight: '1.3', letterSpacing: '-0.015em', fontWeight: 600 },
+				], // 36px
+				'heading-3': [
+					'2rem',
+					{ lineHeight: '1.35', letterSpacing: '-0.01em', fontWeight: 600 },
+				], // 32px
+				'heading-4': [
+					'1.75rem',
+					{ lineHeight: '1.4', letterSpacing: '-0.01em', fontWeight: 600 },
+				], // 28px
+				'heading-5': [
+					'1.5rem',
+					{ lineHeight: '1.45', letterSpacing: '-0.005em', fontWeight: 600 },
+				], // 24px
+				'heading-6': [
+					'1.25rem',
+					{ lineHeight: '1.5', letterSpacing: '0em', fontWeight: 600 },
+				], // 20px
+				'body-large': [
+					'1.125rem',
+					{ lineHeight: '1.75', letterSpacing: '0em' },
+				], // 18px
+				'body-medium': ['1rem', { lineHeight: '1.65', letterSpacing: '0em' }], // 16px
+				'body-small': [
+					'0.875rem',
+					{ lineHeight: '1.55', letterSpacing: '0em' },
+				], // 14px
 			},
 		},
 	},

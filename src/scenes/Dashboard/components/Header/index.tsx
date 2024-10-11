@@ -4,7 +4,7 @@ const Header: FC = () => {
 	return (
 		<div className="flex flex-col text-center">
 			<div className="h-8" />
-			<h1 className="text-heading-2 whitespace-pre-line">
+			<h1 className="text-heading-1 whitespace-pre-line">
 				{`Korea Red Cross Events
 						and Their Impacts`}
 			</h1>

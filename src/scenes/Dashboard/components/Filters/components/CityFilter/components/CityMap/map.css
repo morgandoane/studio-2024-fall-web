@@ -1,0 +1,15 @@
+.mapbox-ctrl-top-left {
+	display: none;
+}
+
+.mapboxgl-ctrl-bottom-right {
+	display: none;
+}
+
+.mapboxgl-ctrl-bottom-left {
+	display: none;
+}
+
+.mapboxgl-ctrl-top-right {
+	display: none;
+}
