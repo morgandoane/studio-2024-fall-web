@@ -1,5 +1,13 @@
 import p5 from "p5";
 
+export enum XSection {
+  First = 1,
+  Second,
+  Third,
+  Fourth,
+  Fifth,
+}
+
 export class SingleBeatCanvas {
   p5: p5;
   height: number;
@@ -21,6 +29,8 @@ export class SingleBeatCanvas {
   month: number;
   animationTotalFrameRate: number;
   heartbeatDot: { x: number; y: number; hidden: boolean }[] = [];
+  traceOffsetMonths: number = 1;
+  beatColor: [number, number, number, number] = [255, 0, 0, 255];
 
   constructor({
     p5,
@@ -151,47 +161,182 @@ export class SingleBeatCanvas {
     }
   }
 
-  renderLines() {
-    if (this.supply > this.demand) {
-      this.p5.stroke(255, 0, 0, 200);
-    } else {
-      this.p5.stroke(15, 15, 15, 255);
+  findSectionStartEndPoints(section: XSection) {
+    switch (section) {
+      case XSection.First:
+        return {
+          x1: this.leftTopX,
+          y1: this.leftTopY + this.height / 2,
+          x2: this.leftTopX + this.width / 3,
+          y2: this.leftTopY + this.height / 2,
+        };
+      case XSection.Second:
+        return {
+          x1: this.leftTopX + this.width / 3,
+          y1: this.leftTopY + this.height / 2,
+          x2: this.leftTopX + this.width * (5 / 12),
+          y2: this.leftTopY + (this.height / 2 - this.supplyAmplitude),
+        };
+      case XSection.Third:
+        return {
+          x1: this.leftTopX + this.width * (5 / 12),
+          y1: this.leftTopY + (this.height / 2 - this.supplyAmplitude),
+          x2: this.leftTopX + this.width * (7 / 12),
+          y2: this.leftTopY + this.height / 2 + this.demandAmplitude,
+        };
+      case XSection.Fourth:
+        return {
+          x1: this.leftTopX + this.width * (7 / 12),
+          y1: this.leftTopY + this.height / 2 + this.demandAmplitude,
+          x2: this.leftTopX + this.width * (2 / 3),
+          y2: this.leftTopY + this.height / 2,
+        };
+      case XSection.Fifth:
+        return {
+          x1: this.leftTopX + this.width * (2 / 3),
+          y1: this.leftTopY + this.height / 2,
+          x2: this.leftTopX + this.width,
+          y2: this.leftTopY + this.height / 2,
+        };
     }
+  }
+
+  drawLineTill(x: number) {
+    const section = this.findXSection(x);
+    const sectionsLessThanCurrent = Array.from(
+      { length: section - 1 },
+      (_, i) => (i + 1) as XSection
+    );
+    const [r, g, b, a] = this.beatColor;
+    this.p5.push();
+    this.p5.stroke(r, g, b, a);
+    sectionsLessThanCurrent.forEach((section) => {
+      this.drawSectionLine(section);
+    });
+    this.p5.pop();
+  }
+
+  drawLineFrom(x: number) {
+    const section = this.findXSection(x);
+    const sectionsGreaterThanCurrent = Array.from(
+      { length: 6 - section },
+      (_, i) => (section + 1 + i) as XSection
+    );
+    // remove the right most section
+    sectionsGreaterThanCurrent.pop();
+    const [r, g, b, a] = this.beatColor;
+    this.p5.push();
+    this.p5.stroke(r, g, b, a);
+    sectionsGreaterThanCurrent.forEach((section) => {
+      this.drawSectionLine(section);
+    });
+    this.p5.pop();
+  }
+
+  setGradientContext(section: XSection, x: number) {
+    const context = this.p5.drawingContext;
+    // let gradient;
+    const { x1, x2, y1, y2 } = this.findSectionStartEndPoints(section);
+    const gradient = context.createLinearGradient(
+      x1 + this.leftTopX,
+      y1,
+      x + this.leftTopX,
+      this.findY(x)
+    );
+    const [r, g, b, a] = this.beatColor;
+    gradient.addColorStop(0, this.p5.color(r, g, b, 0).toString());
+    gradient.addColorStop(1, this.p5.color(r, g, b, a).toString());
+    return gradient;
+  }
+
+  drawLineToStart(x: number) {}
+
+  renderTrace() {
+    this.p5.push();
+    const frameCount = this.p5.frameCount;
+    const animationDuration = frameCount % this.animationTotalFrameRate;
+    const isAnimationHappening =
+      animationDuration >
+        (this.month - 1) * (this.animationTotalFrameRate / 12) &&
+      animationDuration < this.month * (this.animationTotalFrameRate / 12);
+    const isMonthInTrace =
+      animationDuration > this.month * (this.animationTotalFrameRate / 12) &&
+      animationDuration <
+        (this.month + this.traceOffsetMonths) *
+          (this.animationTotalFrameRate / 12);
+
+    const deltaPerFrame = this.width / (this.animationTotalFrameRate / 12);
+    const xValue = (frameCount * deltaPerFrame) % this.width;
+    if (isMonthInTrace) {
+      this.drawLineFrom(xValue);
+      this.drawSectionGradientLineFrom(this.findXSection(xValue), xValue);
+    }
+    if (isAnimationHappening) {
+      this.drawLineTill(xValue);
+      this.drawSectionLineTill(this.findXSection(xValue), xValue);
+    }
+    this.p5.pop();
+  }
+
+  drawSectionLine(section: XSection) {
+    const { x1, x2, y1, y2 } = this.findSectionStartEndPoints(section);
+    this.p5.line(x1, y1, x2, y2);
+  }
+
+  drawSectionLineTill(section: XSection, x: number) {
+    this.p5.push();
+    const { x1, y1, x2, y2 } = this.findSectionStartEndPoints(section);
+    const [r, g, b, a] = this.beatColor;
+    this.p5.stroke(r, g, b, a);
+    this.p5.line(x1, y1, x + this.leftTopX, this.findY(x));
+    this.p5.pop();
+  }
+
+  drawSectionGradientLineFrom(section: XSection, x: number) {
+    this.p5.push();
+    const { x2, y2 } = this.findSectionStartEndPoints(section);
+    const gradient = this.setGradientContext(section, x);
+    // if (gradient) {
+    this.p5.drawingContext.strokeStyle = gradient;
+    // this.p5.stroke(255, 0, 0, 255);
+    this.p5.line(x + this.leftTopX, this.findY(x), x2, y2);
+    // }
+    this.p5.pop();
+  }
+
+  renderLines() {
+    this.p5.push();
+    this.p5.stroke(200, 200, 200);
+    // if (this.supply > this.demand) {
+    //   this.p5.stroke(255, 0, 0, 200);
+    // } else {
+    //   this.p5.stroke(15, 15, 15, 255);
+    // }
     this.p5.strokeWeight(2);
-    this.p5.line(
-      this.leftTopX,
-      this.leftTopY + this.height / 2,
-      this.leftTopX + this.width / 3,
-      this.leftTopY + this.height / 2
-    );
-    // line going up
-    this.p5.line(
-      this.leftTopX + this.width / 3,
-      this.leftTopY + this.height / 2,
-      this.leftTopX + this.width * (5 / 12),
-      this.leftTopY + (this.height / 2 - this.supplyAmplitude)
-    );
-    // line going down
-    this.p5.line(
-      this.leftTopX + this.width * (5 / 12),
-      this.leftTopY + (this.height / 2 - this.supplyAmplitude),
-      this.leftTopX + this.width * (7 / 12),
-      this.leftTopY + this.height / 2 + this.demandAmplitude
-    );
-    // line going up to middle
-    this.p5.line(
-      this.leftTopX + this.width * (7 / 12),
-      this.leftTopY + this.height / 2 + this.demandAmplitude,
-      this.leftTopX + this.width * (2 / 3),
-      this.leftTopY + this.height / 2
-    );
-    // line horizontal
-    this.p5.line(
-      this.leftTopX + this.width * (2 / 3),
-      this.leftTopY + this.height / 2,
-      this.leftTopX + this.width,
-      this.leftTopY + this.height / 2
-    );
+    this.drawSectionLine(XSection.First);
+    this.drawSectionLine(XSection.Second);
+    this.drawSectionLine(XSection.Third);
+    this.drawSectionLine(XSection.Fourth);
+    this.drawSectionLine(XSection.Fifth);
+    this.p5.pop();
+  }
+
+  findXSection(x: number) {
+    const division1 = this.width / 3;
+    const division2 = this.width * (5 / 12);
+    const division3 = this.width * (7 / 12);
+    const division4 = this.width * (2 / 3);
+    if (x <= division1) {
+      return XSection.First;
+    } else if (x <= division2) {
+      return XSection.Second;
+    } else if (x <= division3) {
+      return XSection.Third;
+    } else if (x <= division4) {
+      return XSection.Fourth;
+    } else {
+      return XSection.Fifth;
+    }
   }
 
   findY(x: number) {
@@ -231,6 +376,7 @@ export class SingleBeatCanvas {
   }
 
   renderDots() {
+    this.p5.push();
     this.p5.noStroke();
     const frameCount = this.p5.frameCount;
     const animationDuration = frameCount % this.animationTotalFrameRate;
@@ -240,11 +386,6 @@ export class SingleBeatCanvas {
         (this.month - 1) * (this.animationTotalFrameRate / 12) &&
       animationDuration < this.month * (this.animationTotalFrameRate / 12);
 
-    // console.log(
-    //   this.month,
-    //   (this.month - 1) * (this.animationTotalFrameRate / 12),
-    //   this.month * (this.animationTotalFrameRate / 12)
-    // );
     const deltaPerFrame = this.width / (this.animationTotalFrameRate / 12);
     const xValue = (frameCount * deltaPerFrame) % this.width;
     // draw a dot
@@ -270,16 +411,30 @@ export class SingleBeatCanvas {
           //   dot.hidden = true;
           // }
         }
-      } else {
-        this.p5.fill(255, 0, 0);
-        const y = this.findY(xValue);
-        this.p5.ellipse(xValue + this.leftTopX, y, 4, 4);
       }
     }
+    this.p5.pop();
+  }
+
+  renderMonthBounds() {
+    this.p5.push();
+    if (this.month !== 12) {
+      this.p5.stroke(200, 200, 200, 100);
+      this.p5.strokeWeight(1);
+      this.p5.line(
+        this.leftTopX + this.width,
+        this.leftTopY + this.height * (1 / 4),
+        this.leftTopX + this.width,
+        this.leftTopY + this.height * (3 / 4)
+      );
+    }
+    this.p5.pop();
   }
 
   render() {
+    this.renderMonthBounds();
     this.renderLines();
+    this.renderTrace();
     this.renderDots();
     // const frameCount = this.p5.frameCount;
     // const xValue = (frameCount * 2) % this.width;
