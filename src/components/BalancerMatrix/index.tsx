@@ -22,7 +22,9 @@ const BalancerMatrix: FC<BalancerMatrixProps> = ({
 }) => {
 	const sorted = data.sort((a, b) => a.year - b.year);
 	const maxEvents = Math.max(
-		...sorted.flatMap((item) => item.data.map((balancer) => balancer.events))
+		...sorted.flatMap((item) =>
+			item.data.map((balancer) => balancer.events.length)
+		)
 	);
 
 	return (

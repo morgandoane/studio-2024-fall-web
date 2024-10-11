@@ -27,7 +27,7 @@ const BalancerRow: FC<BalancerRowProps> = ({
 
 	const splinePoints = balancers.map((balancer, index) => {
 		const stemHeight = getStemHeight(
-			balancer.events,
+			balancer.events.length,
 			maxEvents,
 			width / balancers.length
 		);
