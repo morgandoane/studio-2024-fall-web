@@ -1,39 +1,25 @@
 import { FC, PropsWithChildren, useState } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 
 export interface CollapseProps {
 	title: string;
-	defaultOpen?: boolean;
 }
 
 const Collapse: FC<PropsWithChildren<CollapseProps>> = ({
 	title,
 	children,
-	defaultOpen = true,
 }) => {
-	const [open, setOpen] = useState(defaultOpen);
-	const toggle = () => setOpen(!open);
+	const [open, setOpen] = useState(true);
 	return (
 		<div>
-			<div
-				className="flex justify-between align-middle cursor-pointer py-2"
-				onClick={toggle}
-			>
+			<div className="flex justify-between align-middle cursor-pointer py-2">
 				<p className="text-heading-5">{title}</p>
-				<ChevronDownIcon
-					className="h-8 mt-2"
-					style={{
-						transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-						transition: 'transform 0.3s ease',
-					}}
-				/>
 			</div>
 			<motion.div
 				style={{
 					overflow: 'hidden',
 				}}
-				initial={defaultOpen ? 'open' : 'closed'}
+				initial={open ? 'open' : 'closed'}
 				variants={{
 					open: { height: 'auto', opacity: 1 },
 					closed: { height: 0, opacity: 0 },

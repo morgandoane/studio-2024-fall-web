@@ -3,13 +3,14 @@ import CanvasRow from '@components/CanvasRow';
 import { FC, useMemo } from 'react';
 
 export interface CanvasMatrixProps {
+	onClick: (year: number, month: number) => void;
 	data: {
 		year: number;
 		data: Omit<BalancerProps, 'width' | 'maxEvents' | 'thk'>[];
 	}[];
 }
 
-const CanvasMatrix: FC<CanvasMatrixProps> = ({ data }) => {
+const CanvasMatrix: FC<CanvasMatrixProps> = ({ data, onClick }) => {
 	const sorted = useMemo(() => data.sort((a, b) => a.year - b.year), [data]);
 	const maxEvents = useMemo(
 		() =>
@@ -23,7 +24,13 @@ const CanvasMatrix: FC<CanvasMatrixProps> = ({ data }) => {
 	return (
 		<div>
 			{sorted.map((item, index) => (
-				<CanvasRow key={index} balancers={item.data} maxEvents={maxEvents} />
+				<CanvasRow
+					onClick={(month) => onClick(item.year, month)}
+					year={item.year}
+					key={index}
+					balancers={item.data}
+					maxEvents={maxEvents}
+				/>
 			))}
 		</div>
 	);

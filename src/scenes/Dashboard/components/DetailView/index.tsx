@@ -47,16 +47,30 @@ const DetailView: FC<DetailViewProps> = ({
 
 	const loading = eventLoading || supplyLoading || demandLoading;
 
+	const supplyTotal = supply.reduce((acc, s) => acc + s.total_unit, 0);
+	const demandTotal = demand.reduce((acc, d) => acc + d.unit, 0);
+
+	const delta = supplyTotal - demandTotal;
+
 	return (
-		<div>
-			<Collapse title="Red Cross Events" defaultOpen={false}>
+		<div className="flex flex-col gap-16">
+			<div>
+				<p className="text-heading-2">
+					{`In ${dashboardState.year}, blood ${
+						supplyTotal > demandTotal ? 'supply' : 'demand'
+					} in ${dashboardState.city ?? 'South Korea'} exceed ${
+						supplyTotal > demandTotal ? 'demand' : 'supply'
+					} by ${Math.abs(Math.round(delta))} units`}
+				</p>
+			</div>
+			<Collapse title="Red Cross Events">
 				<div className="flex flex-col gap-4">
 					{events.map((e, i) => (
 						<EventCard event={e} key={`event-${i}`} />
 					))}
 				</div>
 			</Collapse>
-			<Collapse title="Blood Demand" defaultOpen={false}>
+			<Collapse title="Blood Demand">
 				<DemandDetail
 					demand={demand}
 					year={dashboardState.year!}

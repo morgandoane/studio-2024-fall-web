@@ -4,11 +4,13 @@ import P5 from 'p5';
 import { MultiBeatCanvas } from './multiBeatCanvas';
 
 interface CanvasRowProps {
+	year: number;
 	balancers: Omit<BalancerProps, 'width' | 'maxEvents' | 'thk'>[];
 	maxEvents: number;
+	onClick: (month: number) => void;
 }
 
-const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
+const CanvasRow: FC<CanvasRowProps> = ({ year, balancers, onClick }) => {
 	const [container, setContainer] = useState<HTMLDivElement | null>(null);
 	const multiBeatCanvasRef = useRef<MultiBeatCanvas | null>(null);
 
@@ -54,11 +56,21 @@ const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
 	return (
 		<div
 			ref={gotContainer}
+			onClick={(e) => {
+				// index is 0-11, relative to the size of the div
+				const index = Math.floor((e.clientX / container!.clientWidth) * 12);
+				onClick(index + 1);
+			}}
 			style={{
 				width: '100%',
 				height: 100,
+				position: 'relative',
 			}}
-		></div>
+		>
+			<div className="absolute top-1/2 left-0">
+				<p className="text-body-small text-gray-400">{year}</p>
+			</div>
+		</div>
 	);
 };
 

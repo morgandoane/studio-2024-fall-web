@@ -94,7 +94,16 @@ const MatrixView: FC<{
 							});
 						}}
 					/> */}
-					<CanvasMatrix data={nodes} />
+					<CanvasMatrix
+						data={nodes}
+						onClick={(year, month) => {
+							setDashboardState({
+								...dashboardState,
+								year,
+								month,
+							});
+						}}
+					/>
 				</div>
 			</div>
 			<div style={{ height: '96px' }} />

@@ -110,21 +110,48 @@ const Dashboard: FC = () => {
 		>
 			<div
 				style={{
-					display: 'flex',
-					justifyContent: 'center',
 					borderBottom: '1px solid #e0e0e0',
 					boxShadow:
 						scrollPosition !== 0 ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none',
 				}}
 			>
-				<div style={{ flex: 1, maxWidth: '1200px' }}>
-					<Header />
-					<div style={{ height: '16px' }} />
-					<Filters
-						dashboardState={dashboardState}
-						setDashboardState={setDashboardState}
-					/>
-					<div style={{ height: '16px' }} />
+				<div className="flex justify-center">
+					<div style={{ flex: 1, maxWidth: '1200px' }}>
+						<Header />
+						<div style={{ height: '16px' }} />
+						<Filters
+							dashboardState={dashboardState}
+							setDashboardState={setDashboardState}
+						/>
+						<div style={{ height: '16px' }} />
+					</div>
+				</div>
+				<div className="flex justify-center">
+					<div className="flex flex-1" style={{ maxWidth: '1200px' }}>
+						{[
+							'Jan',
+							'Feb',
+							'Mar',
+							'Apr',
+							'May',
+							'Jun',
+							'Jul',
+							'Aug',
+							'Sep',
+							'Oct',
+							'Nov',
+							'Dec',
+						].map((month, index) => (
+							<div
+								className="flex flex-1 align-middle text-center sticky"
+								key={index}
+							>
+								<p className="text-body-small text-center w-full text-gray-400">
+									{month}
+								</p>
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 			<div
