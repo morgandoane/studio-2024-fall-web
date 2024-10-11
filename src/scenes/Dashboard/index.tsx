@@ -141,7 +141,7 @@ const Dashboard: FC = () => {
 				}}
 			>
 				<div style={{ flex: 1, maxWidth: '1200px' }}>
-					<AnimatePresence>
+					<AnimatePresence mode="popLayout">
 						<motion.div
 							key={`matrix-view-${dashboardState.year ?? 'null'}`}
 							initial={{ opacity: 0 }}
