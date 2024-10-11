@@ -8,7 +8,7 @@ export class MultiBeatCanvas {
   width: number;
   singleBeats: SingleBeatCanvas[];
   data: Omit<BalancerProps, "width" | "maxEvents" | "thk">[];
-  animationTotalFrameRate: number = 2000;
+  animationTotalFrameRate: number = 1000;
 
   constructor(
     p5: p5,

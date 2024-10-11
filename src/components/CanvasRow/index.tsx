@@ -42,7 +42,6 @@ const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
       multiBeatCanvasRef.current = multiBeatCanvas;
       const setup = () => {
         p5.createCanvas(width, height);
-        p5.background(0);
       };
       p5.setup = () => {
         setup();
