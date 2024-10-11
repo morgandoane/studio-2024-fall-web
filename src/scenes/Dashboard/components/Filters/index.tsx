@@ -1,6 +1,5 @@
 import { DashboardState } from '@scenes/Dashboard';
 import { FC } from 'react';
-import { Select } from '@headlessui/react';
 import YearFilter from './components/YearFilter';
 import CityFilter from './components/CityFilter';
 

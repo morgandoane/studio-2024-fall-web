@@ -5,6 +5,8 @@ import { DashboardState } from '@scenes/Dashboard';
 import { FC } from 'react';
 import EventCard from './components/EventCard';
 import Collapse from './components/Collapse';
+import Pie from '@components/Pie';
+import DemandDetail from './components/DemandDetail';
 export interface DetailViewProps {
 	dashboardState: DashboardState;
 	setDashboardState: (dashboardState: DashboardState) => void;
@@ -45,17 +47,23 @@ const DetailView: FC<DetailViewProps> = ({
 
 	const loading = eventLoading || supplyLoading || demandLoading;
 
-	if (loading) return <div />;
-
 	return (
 		<div>
-			<Collapse title="Red Cross Events">
+			<Collapse title="Red Cross Events" defaultOpen={false}>
 				<div className="flex flex-col gap-4">
 					{events.map((e, i) => (
 						<EventCard event={e} key={`event-${i}`} />
 					))}
 				</div>
 			</Collapse>
+			<Collapse title="Blood Demand" defaultOpen={false}>
+				<DemandDetail
+					demand={demand}
+					year={dashboardState.year!}
+					city={dashboardState.city}
+				/>
+			</Collapse>
+			<Collapse title="Blood Supply"></Collapse>
 		</div>
 	);
 };

@@ -17,7 +17,7 @@ const Collapse: FC<PropsWithChildren<CollapseProps>> = ({
 	return (
 		<div>
 			<div
-				className="flex justify-between align-middle cursor-pointer px-4 py-2"
+				className="flex justify-between align-middle cursor-pointer py-2"
 				onClick={toggle}
 			>
 				<p className="text-heading-5">{title}</p>
@@ -32,8 +32,6 @@ const Collapse: FC<PropsWithChildren<CollapseProps>> = ({
 			<motion.div
 				style={{
 					overflow: 'hidden',
-					paddingLeft: '16px',
-					paddingRight: '16px',
 				}}
 				initial={defaultOpen ? 'open' : 'closed'}
 				variants={{
