@@ -233,10 +233,21 @@ export class SingleBeatCanvas {
   renderDots() {
     this.p5.noStroke();
     const frameCount = this.p5.frameCount;
-    const animationDuration = this.animationTotalFrameRate / 12;
-    const xValue = frameCount % this.width;
+    const animationDuration = frameCount % this.animationTotalFrameRate;
+    // console.log(animationDuration, this.animationTotalFrameRate / 12);
+    const showDot =
+      animationDuration >
+        (this.month - 1) * (this.animationTotalFrameRate / 12) &&
+      animationDuration < this.month * (this.animationTotalFrameRate / 12);
+
+    // console.log(
+    //   this.month,
+    //   (this.month - 1) * (this.animationTotalFrameRate / 12),
+    //   this.month * (this.animationTotalFrameRate / 12)
+    // );
+    const deltaPerFrame = this.width / (this.animationTotalFrameRate / 12);
+    const xValue = (frameCount * deltaPerFrame) % this.width;
     // draw a dot
-    console.log(frameCount);
     this.heartbeatDot.forEach((dot) => {
       if (dot.hidden) {
         dot.hidden = false;
@@ -245,17 +256,24 @@ export class SingleBeatCanvas {
         dot.y = this.height / 2;
       }
     });
-    for (let i = 0; i < this.heartbeatDot.length; i++) {
-      const dot = this.heartbeatDot[i];
-      if (!dot.hidden) {
+    if (showDot) {
+      if (this.heartbeatDot.length > 0) {
         this.p5.fill(255, 0, 0);
         const y = this.findY(xValue);
         this.p5.ellipse(xValue + this.leftTopX, y, 5, 5);
-        // if (dot.y > y) {
-        //   dot.y -= 1;
-        // } else {
-        //   dot.hidden = true;
-        // }
+        for (let i = 0; i < this.heartbeatDot.length; i++) {
+          const dot = this.heartbeatDot[i];
+
+          // if (dot.y > y) {
+          //   dot.y -= 1;
+          // } else {
+          //   dot.hidden = true;
+          // }
+        }
+      } else {
+        this.p5.fill(255, 0, 0);
+        const y = this.findY(xValue);
+        this.p5.ellipse(xValue + this.leftTopX, y, 4, 4);
       }
     }
   }
@@ -263,5 +281,10 @@ export class SingleBeatCanvas {
   render() {
     this.renderLines();
     this.renderDots();
+    // const frameCount = this.p5.frameCount;
+    // const xValue = (frameCount * 2) % this.width;
+    // this.p5.fill(255, 0, 0);
+    // const y = this.findY(xValue);
+    // this.p5.ellipse(xValue + this.leftTopX, y, 2, 2);
   }
 }

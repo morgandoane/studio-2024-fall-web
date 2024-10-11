@@ -8,7 +8,7 @@ export class MultiBeatCanvas {
   width: number;
   singleBeats: SingleBeatCanvas[];
   data: Omit<BalancerProps, "width" | "maxEvents" | "thk">[];
-  animationTotalFrameRate: number = 600;
+  animationTotalFrameRate: number = 2000;
 
   constructor(
     p5: p5,
@@ -38,7 +38,7 @@ export class MultiBeatCanvas {
         maxDemand,
         minDemand,
         month: i + 1,
-        animationTotalFrameRate: this.animationTotalFrameRate / 12,
+        animationTotalFrameRate: this.animationTotalFrameRate,
       });
     });
     this.data = data;
