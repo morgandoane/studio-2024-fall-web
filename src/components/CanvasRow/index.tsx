@@ -19,10 +19,13 @@ const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
     const canvas = new P5((p5: P5) => {
       const width = container.clientWidth;
       const height = width / 12;
-      const multiBeatCanvas = new MultiBeatCanvas(p5, width, height);
-      p5.setup = () => {
-        p5.createCanvas(100 * 12, 100);
+      const multiBeatCanvas = new MultiBeatCanvas(p5, width, height, balancers);
+      const setup = () => {
+        p5.createCanvas(width, height);
         p5.background(0);
+      };
+      p5.setup = () => {
+        setup();
       };
       p5.draw = () => {
         multiBeatCanvas.render();

@@ -2,30 +2,46 @@ import BalancerMatrix, {
   BalancerMatrixProps,
 } from "@components/BalancerMatrix";
 import CanvasMatrix from "@components/CanvasMatrix";
+import { useSupply } from "@data/supply/useSupply";
 import { useDemand } from "@data/demand/useDemand";
 import { useEvents } from "@data/events/useEvents";
-import { useSupply } from "@data/supply/useSupply";
+import { Supply } from "@data/supply/Supply";
 import { DashboardState } from "@scenes/Dashboard";
-import { FC } from "react";
+import { FC, useCallback } from "react";
+import { Demand } from "@data/demand/Demand";
+import { Event } from "@data/events/Event";
 
 const MatrixView: FC<{
   dashboardState: DashboardState;
   setDashboardState: (dashboardState: DashboardState) => void;
 }> = ({ dashboardState, setDashboardState }) => {
-  const { data: supply, loading: supplyLoading } = useSupply((s) => {
-    if (!dashboardState.city) return true;
-    else return s.city === dashboardState.city;
-  });
+  const supplyFilter = useCallback(
+    (s: Supply) => {
+      if (!dashboardState.city) return true;
+      else return s.city === dashboardState.city;
+    },
+    [dashboardState.city]
+  );
+  const demandFilter = useCallback(
+    (s: Demand) => {
+      if (!dashboardState.city) return true;
+      else return s.city === dashboardState.city;
+    },
+    [dashboardState.city]
+  );
 
-  const { data: demand, loading: demandLoading } = useDemand((s) => {
-    if (!dashboardState.city) return true;
-    else return s.city === dashboardState.city;
-  });
+  const eventFilter = useCallback(
+    (s: Event) => {
+      if (!dashboardState.city) return true;
+      else return s.city === dashboardState.city || !s.city;
+    },
+    [dashboardState.city]
+  );
+  const { data: supply, loading: supplyLoading } = useSupply(supplyFilter);
 
-  const { data: events, loading: eventsLoading } = useEvents((s) => {
-    if (!dashboardState.city) return true;
-    else return s.city === dashboardState.city || !s.city;
-  });
+  const { data: demand, loading: demandLoading } = useDemand(demandFilter);
+
+  const { data: events, loading: eventsLoading } = useEvents(eventFilter);
 
   const loading = supplyLoading || eventsLoading || demandLoading;
 
