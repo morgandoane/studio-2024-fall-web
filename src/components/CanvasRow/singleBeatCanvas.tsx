@@ -41,7 +41,6 @@ export class SingleBeatCanvas {
     this.events = events;
     this.amplitude = this.height / 2 - this.height / 10;
     this.frequency = 0.01;
-    console.log(leftTopX, leftTopY, width, height);
   }
 
   render() {
@@ -56,7 +55,7 @@ export class SingleBeatCanvas {
       this.leftTopX + this.width / 4,
       this.leftTopY + this.height / 2
     );
-    this.p5.stroke(255);
+    this.p5.stroke(0);
     this.p5.strokeWeight(2);
   }
 }

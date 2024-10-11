@@ -1,6 +1,13 @@
 import { BalancerProps } from "@components/Balancer";
 import Heartbeat from "@components/Heartbeat";
-import React, { FC, useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import P5 from "p5";
 import { MultiBeatCanvas } from "./multiBeatCanvas";
 
@@ -12,11 +19,20 @@ interface CanvasRowProps {
 const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
-  const p5Canvas = useMemo(() => {
+
+  const gotContainer = useCallback((element: HTMLDivElement) => {
+    if (!element) {
+      return;
+    }
+    setContainer(element);
+  }, []);
+
+  useEffect(() => {
     if (!container) {
       return;
     }
     const canvas = new P5((p5: P5) => {
+      console.log("hihi");
       const width = container.clientWidth;
       const height = width / 12;
       const multiBeatCanvas = new MultiBeatCanvas(p5, width, height, balancers);
@@ -31,16 +47,10 @@ const CanvasRow: FC<CanvasRowProps> = ({ balancers, maxEvents }) => {
         multiBeatCanvas.render();
       };
     }, container);
-
-    return canvas;
+    return () => {
+      canvas.remove();
+    };
   }, [container]);
-
-  const gotContainer = useCallback((element: HTMLDivElement) => {
-    if (!element) {
-      return;
-    }
-    setContainer(element);
-  }, []);
 
   return (
     <div
