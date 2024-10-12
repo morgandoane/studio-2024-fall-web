@@ -1,194 +1,52 @@
-import { FC, useEffect, useState } from 'react';
-import MatrixView from './components/MatrixView';
-import DetailView from './components/DetailView';
-import { useSearchParams } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import Header from './components/Header';
+import { useData } from '@data/useData';
+import { FC, ReactElement, useState } from 'react';
+import Heatmaps from './views/Heatmaps';
+import { Button, Tab, TabGroup, TabList } from '@headlessui/react';
 import Filters from './components/Filters';
 
-export interface DashboardState {
-	year: number | null;
-	month: number | null;
-	city: string | null;
-}
-
-export type ScrollDirection = 'none' | 'up' | 'down';
+export type DashboardView = 'heatmaps' | 'pulse';
 
 const Dashboard: FC = () => {
-	const [searchParams, setSearchParams] = useSearchParams();
+	const { data, loading } = useData();
 
-	const [scrollPosition, setScrollPosition] = useState(0);
+	const [view, setView] = useState<DashboardView>('heatmaps');
 
-	const dashboardState: DashboardState = {
-		year: searchParams.get('year') ? parseInt(searchParams.get('year')!) : null,
-		month: searchParams.get('month')
-			? parseInt(searchParams.get('month')!)
-			: null,
-		city: searchParams.get('city'),
+	const components: Record<DashboardView, ReactElement> = {
+		heatmaps: <Heatmaps data={data} />,
+		pulse: <div />,
 	};
 
-	useEffect(() => {
-		// right and left key => change month
-		// up and down key => change year
-		// escape key => clear year and month
-
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === 'ArrowRight') {
-				if (dashboardState.month && dashboardState.month < 12) {
-					setDashboardState({
-						...dashboardState,
-						month: dashboardState.month + 1,
-					});
-				}
-			} else if (e.key === 'ArrowLeft') {
-				if (dashboardState.month && dashboardState.month > 1) {
-					setDashboardState({
-						...dashboardState,
-						month: dashboardState.month - 1,
-					});
-				}
-			} else if (e.key === 'ArrowUp') {
-				if (dashboardState.year) {
-					setDashboardState({
-						...dashboardState,
-						year: dashboardState.year + 1,
-					});
-				}
-			} else if (e.key === 'ArrowDown') {
-				if (dashboardState.year) {
-					setDashboardState({
-						...dashboardState,
-						year: dashboardState.year - 1,
-					});
-				}
-			} else if (e.key === 'Escape') {
-				setDashboardState({
-					...dashboardState,
-					year: null,
-					month: null,
-				});
-			}
-		};
-
-		window.addEventListener('keydown', handleKeyDown);
-
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
-		};
-	}, [dashboardState]);
-
-	const setDashboardState = (dashboardState: DashboardState) => {
-		if (dashboardState.year) {
-			searchParams.set('year', dashboardState.year.toString());
-		} else {
-			searchParams.delete('year');
-		}
-
-		if (dashboardState.month) {
-			searchParams.set('month', dashboardState.month.toString());
-		} else {
-			searchParams.delete('month');
-		}
-
-		if (dashboardState.city) {
-			searchParams.set('city', dashboardState.city);
-		} else {
-			searchParams.delete('city');
-		}
-
-		setSearchParams(searchParams);
-	};
+	if (loading) return null;
 
 	return (
-		<div
-			style={{
-				height: '100vh',
-				display: 'flex',
-				flexDirection: 'column',
-				overflow: 'hidden',
-			}}
-		>
-			<div
-				style={{
-					borderBottom: '1px solid #e0e0e0',
-					boxShadow:
-						scrollPosition !== 0 ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none',
-				}}
-			>
-				<div className="flex justify-center">
-					<div style={{ flex: 1, maxWidth: '1200px' }}>
-						<Header />
-						<div style={{ height: '16px' }} />
-						<Filters
-							dashboardState={dashboardState}
-							setDashboardState={setDashboardState}
-						/>
-						<div style={{ height: '16px' }} />
-					</div>
+		<div className="flex flex-col h-screen overflow-hidden">
+			<div className="flex justify-between border-b border-gray-500  pl-12 pr-12 py-2">
+				<div className="flex gap-2">
+					<Button
+						onClick={() => setView('heatmaps')}
+						className={`py-1 px-4 justify-start rounded-full ${
+							view === 'heatmaps'
+								? 'hover:bg-gray-900 bg-gray-800 text-white'
+								: 'hover:bg-slate-100'
+						}`}
+					>
+						Heatmaps
+					</Button>
+					<Button
+						onClick={() => setView('pulse')}
+						className={`py-1 px-4 justify-start rounded-full ${
+							view === 'pulse'
+								? 'hover:bg-gray-900 bg-gray-800 text-white'
+								: 'hover:bg-slate-100'
+						}`}
+					>
+						Pulse
+					</Button>
 				</div>
-				<div className="flex justify-center">
-					<div className="flex flex-1" style={{ maxWidth: '1200px' }}>
-						{[
-							'Jan',
-							'Feb',
-							'Mar',
-							'Apr',
-							'May',
-							'Jun',
-							'Jul',
-							'Aug',
-							'Sep',
-							'Oct',
-							'Nov',
-							'Dec',
-						].map((month, index) => (
-							<div
-								className="flex flex-1 align-middle text-center sticky"
-								key={index}
-							>
-								<p className="text-body-small text-center w-full text-gray-400">
-									{month}
-								</p>
-							</div>
-						))}
-					</div>
-				</div>
+				<Filters />
 			</div>
-			<div
-				style={{
-					flex: 1,
-					overflowY: 'auto',
-					display: 'flex',
-					justifyContent: 'center',
-				}}
-				onScroll={(e) => {
-					const target = e.target as HTMLDivElement;
-					const scrollY = target.scrollTop;
-					setScrollPosition(scrollY);
-				}}
-			>
-				<div style={{ flex: 1, maxWidth: '1200px' }}>
-					<AnimatePresence mode="popLayout">
-						<motion.div
-							key={`matrix-view-${dashboardState.year ?? 'null'}`}
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-						>
-							{dashboardState.year ? (
-								<DetailView
-									dashboardState={dashboardState}
-									setDashboardState={setDashboardState}
-								/>
-							) : (
-								<MatrixView
-									dashboardState={dashboardState}
-									setDashboardState={setDashboardState}
-								/>
-							)}
-						</motion.div>
-					</AnimatePresence>
-				</div>
+			<div className="flex-1 overflow-y-auto overflow-x-hidden">
+				{components[view]}
 			</div>
 		</div>
 	);

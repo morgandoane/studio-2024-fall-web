@@ -1,27 +1,32 @@
-import { DashboardState } from '@scenes/Dashboard';
 import { FC } from 'react';
 import YearFilter from './components/YearFilter';
 import CityFilter from './components/CityFilter';
+import { useSearchParams } from 'react-router-dom';
 
-export interface FiltersProps {
-	dashboardState: DashboardState;
-	setDashboardState: (dashboardState: DashboardState) => void;
-}
+const Filters: FC = () => {
+	const [searchParams, setSeacrhParams] = useSearchParams();
 
-const Filters: FC<FiltersProps> = ({ dashboardState, setDashboardState }) => {
 	return (
 		<div className="flex gap-2 items-center">
 			<p>Filters:</p>
 			<YearFilter
-				value={dashboardState.year}
+				value={
+					searchParams.get('year') ? parseInt(searchParams.get('year')!) : null
+				}
 				onChange={(value) =>
-					setDashboardState({ ...dashboardState, year: value })
+					setSeacrhParams({
+						...searchParams,
+						year: value ? value.toString() : '',
+					})
 				}
 			/>
 			<CityFilter
-				value={dashboardState.city}
+				value={searchParams.get('city')}
 				onChange={(value) =>
-					setDashboardState({ ...dashboardState, city: value })
+					setSeacrhParams({
+						...searchParams,
+						city: value ? value : '',
+					})
 				}
 			/>
 		</div>

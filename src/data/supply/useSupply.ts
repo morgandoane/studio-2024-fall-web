@@ -1,32 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Supply } from './Supply';
 
 export const useSupply = (filter?: (supply: Supply) => boolean) => {
-	const [loading, setLoading] = useState(true);
 	const [data, setData] = useState<Supply[]>([]);
-	const datasetRef = useRef<Supply[] | null>(null);
+
+	const getData = async () => {
+		setData((await import('./supply.json')).default as Supply[]);
+	};
 
 	useEffect(() => {
-		const loadDataset = async () => {
-			try {
-				if (!datasetRef.current) {
-					const dataset = (await import('./supply.json')).default as Supply[];
-					datasetRef.current = dataset;
-				}
+		getData();
+	}, []);
 
-				const filtered = datasetRef.current?.filter((d: Supply) =>
-					filter ? filter(d) : true
-				);
-				setData(filtered || []);
-			} catch (error) {
-				console.error('Failed to load dataset:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
+	const filtered = filter ? data.filter(filter) : data;
 
-		loadDataset();
-	}, [filter]);
-
-	return { data, loading };
+	return { data: filtered, loading: data.length === 0 };
 };

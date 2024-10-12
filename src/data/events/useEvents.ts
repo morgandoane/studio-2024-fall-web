@@ -1,32 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Event } from './Event';
 
 export const useEvents = (filter?: (event: Event) => boolean) => {
-	const [loading, setLoading] = useState(true);
 	const [data, setData] = useState<Event[]>([]);
-	const datasetRef = useRef<Event[] | null>(null);
+
+	const getData = async () => {
+		setData((await import('./events.json')).default as Event[]);
+	};
 
 	useEffect(() => {
-		const loadDataset = async () => {
-			try {
-				if (!datasetRef.current) {
-					const dataset = (await import('./events.json')).default as Event[];
-					datasetRef.current = dataset;
-				}
+		getData();
+	}, []);
 
-				const filtered = datasetRef.current?.filter((d: Event) =>
-					filter ? filter(d) : true
-				);
-				setData(filtered || []);
-			} catch (error) {
-				console.error('Failed to load dataset:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
+	const filtered = filter ? data.filter(filter) : data;
 
-		loadDataset();
-	}, [filter]);
-
-	return { data, loading };
+	return { data: filtered, loading: data.length === 0 };
 };
