@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
 import VisPie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
 import { Group } from '@visx/group';
 import { animated, useTransition, interpolate } from '@react-spring/web';

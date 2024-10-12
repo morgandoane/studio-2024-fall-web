@@ -1,7 +1,7 @@
 import { useData } from '@data/useData';
 import { FC, ReactElement, useState } from 'react';
 import Heatmaps from './views/Heatmaps';
-import { Button, Tab, TabGroup, TabList } from '@headlessui/react';
+import { Button } from '@headlessui/react';
 import Filters from './components/Filters';
 
 export type DashboardView = 'heatmaps' | 'pulse';

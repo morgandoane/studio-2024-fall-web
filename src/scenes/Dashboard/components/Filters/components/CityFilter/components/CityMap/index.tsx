@@ -8,7 +8,7 @@ export interface CityMapProps {
 	onChange: (value: string | null) => void;
 }
 
-const CityMap: FC<CityMapProps> = ({ value, onChange }) => {
+const CityMap: FC<CityMapProps> = ({ onChange }) => {
 	const mapRef = useRef<mapboxgl.Map>();
 	const mapContainerRef = useRef<HTMLDivElement>(null);
 
