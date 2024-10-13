@@ -1,20 +1,15 @@
-import { useSearchParams } from 'react-router-dom';
 import { useDemand } from './demand/useDemand';
 import { useEvents } from './events/useEvents';
 import { useSupply } from './supply/useSupply';
+export interface Filter {
+	month: number | null;
+	year: number | null;
+	city: string | null;
+}
 
-const useData = () => {
-	const [searchParams] = useSearchParams();
+const useData = (filter: Filter) => {
 	const minYear = 2006;
 	const maxYear = 2022;
-
-	const filter = {
-		month: searchParams.get('month')
-			? parseInt(searchParams.get('month')!)
-			: null,
-		year: searchParams.get('year') ? parseInt(searchParams.get('year')!) : null,
-		city: searchParams.get('city') || null,
-	};
 
 	const { data: supply, loading: supplyLoading } = useSupply((s) => {
 		const month = filter.month ? s.month === filter.month : true;
