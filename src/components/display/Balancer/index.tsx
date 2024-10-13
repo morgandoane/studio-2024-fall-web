@@ -37,7 +37,7 @@ const Balancer: FC<BalancerProps> = ({ width, value, max, min, index }) => {
 
 	const ratio = value.supply / value.demand;
 	const ratioPosition = (ratio - min.ratio) / (max.ratio - min.ratio);
-	const angle = ratioPosition * -90;
+	const angle = Math.max(ratioPosition * -90, -90);
 
 	const minTabLength = 18;
 	const maxTabLength = width * 0.475;
