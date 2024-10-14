@@ -33,14 +33,14 @@ const Home: FC = () => {
 
 	return (
 		<div className="h-screen overflow-hidden flex flex-col overflow-y-auto">
-			<div className="flex justify-center pb-48">
+			<div className="flex justify-center pb-16">
 				<div className="flex-1 max-w-screen-xl">
 					<Header />
 					<div className="flex flex-grow">
 						<div className="sticky top-0 h-screen overflow-y-auto">
 							<Navigator filter={filter} setFilter={setFilter} />
 						</div>
-						<div className="flex-grow overflow-y-auto">
+						<div className="flex-grow overflow-y-auto overflow-x-hidden">
 							<Body filter={filter} setFilter={setFilter} />
 						</div>
 					</div>

@@ -1,4 +1,4 @@
-import { FC, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import Balancer, { BalancerProps } from '../Balancer';
 import { useSize } from '@hooks/useSize';
 
@@ -8,6 +8,7 @@ export interface BalancerRowProps {
 	min: BalancerProps['min'];
 	index: number;
 	label: string;
+	onClick: (index: number) => void;
 }
 
 const BalancerRow: FC<BalancerRowProps> = ({
@@ -16,9 +17,25 @@ const BalancerRow: FC<BalancerRowProps> = ({
 	min,
 	index: rowIndex,
 	label,
+	onClick,
 }) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const { width } = useSize(ref);
+
+	const [entered, setEntered] = useState(false);
+
+	useEffect(() => {
+		if (width) {
+			const delay = 75 * rowIndex;
+
+			const timeout = setTimeout(() => {
+				setEntered(true);
+			}, delay);
+
+			return () => clearTimeout(timeout);
+		}
+	}, [width]);
+
 	return (
 		<div
 			ref={ref}
@@ -26,6 +43,8 @@ const BalancerRow: FC<BalancerRowProps> = ({
 			style={{
 				height: `${width / balancers.length}px`,
 				position: 'relative',
+				opacity: entered ? 1 : 0,
+				transition: 'opacity 0.5s ease',
 			}}
 		>
 			<p
@@ -41,6 +60,7 @@ const BalancerRow: FC<BalancerRowProps> = ({
 			</p>
 			{balancers.map((balancer, colIndex) => (
 				<Balancer
+					onClick={() => onClick(colIndex)}
 					key={`balancer-${colIndex}`}
 					width={width / balancers.length}
 					value={balancer}

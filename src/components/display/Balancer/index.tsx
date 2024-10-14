@@ -26,9 +26,17 @@ export interface BalancerProps {
 		row: number;
 		col: number;
 	};
+	onClick: () => void;
 }
 
-const Balancer: FC<BalancerProps> = ({ width, value, max, min, index }) => {
+const Balancer: FC<BalancerProps> = ({
+	width,
+	value,
+	max,
+	min,
+	index,
+	onClick,
+}) => {
 	const thk = width / 6;
 
 	const [hovered, setHovered] = useState(false);
@@ -67,6 +75,7 @@ const Balancer: FC<BalancerProps> = ({ width, value, max, min, index }) => {
 
 	return (
 		<div
+			onClick={onClick}
 			onMouseEnter={() => setHovered(true)}
 			onMouseLeave={() => setHovered(false)}
 			className="relative"

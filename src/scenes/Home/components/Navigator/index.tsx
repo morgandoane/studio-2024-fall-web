@@ -21,7 +21,7 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
 
 	return (
 		<div className="sticky top-0 h-full border-r border-gray-200">
-			<div className=" p-16 h-full min-w-72 flex justify-center">
+			<div className=" p-16 h-full min-w-72 w-72 flex justify-center">
 				(Navigator)
 			</div>
 		</div>

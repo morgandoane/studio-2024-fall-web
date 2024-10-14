@@ -1,23 +1,18 @@
+import BalancerRow, { BalancerRowProps } from '@components/display/BalancerRow';
 import { Filter, useData } from '@data/useData';
-import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
-import DetailView from './components/DetailView';
-import MatrixView from './components/MatrixView';
 
-export interface BodyProps {
+export interface MatrixViewProps {
 	filter: Filter;
 	setFilter: (newFilter: Filter) => void;
+	balancers: BalancerRowProps[];
 }
 
-const Body: FC<BodyProps> = ({ filter, setFilter }) => {
+const MatrixView: FC<MatrixViewProps> = ({ balancers, filter, setFilter }) => {
 	const {
 		data: { supply, demand, events },
 		loading,
-	} = useData({
-		year: null,
-		month: null,
-		city: filter.city,
-	});
+	} = useData(filter);
 
 	const getValues = () => {
 		const result: {
@@ -91,78 +86,74 @@ const Body: FC<BodyProps> = ({ filter, setFilter }) => {
 		return null;
 	}
 
-	const balancers = years.map((year, i) => {
-		return {
-			onClick: (monthIndex: number) => {
-				setFilter({
-					...filter,
-					year: parseInt(year),
-					month: monthIndex + 1,
-				});
-			},
-			balancers: Object.entries(values[parseInt(year)]).map(
-				([month, { supply, demand, events }]) => {
-					return {
-						supply,
-						demand,
-						events,
-					};
-				}
-			),
-			min: {
-				supply: minSupply,
-				demand: minDemand,
-				events: eventMin,
-				ratio: minRatio,
-			},
-			max: {
-				supply: maxSupply,
-				demand: maxDemand,
-				events: eventMax,
-				ratio: maxRatio,
-			},
-			index: i,
-			label: year,
-		};
-	});
+	const months = [
+		'Jan',
+		'Feb',
+		'Mar',
+		'Apr',
+		'May',
+		'Jun',
+		'Jul',
+		'Aug',
+		'Sep',
+		'Oct',
+		'Nov',
+		'Dec',
+	];
+
+	if (loading) return <div />;
 
 	return (
-		<AnimatePresence>
-			<motion.div
-				key={filter.year ? 'detailView' : 'matrixView'}
-				initial={{ opacity: 0 }}
-				animate={{ opacity: 1 }}
-				exit={{ opacity: 0 }}
-				style={{ overflowX: 'hidden' }}
-			>
-				{filter.year ? (
-					<DetailView
-						filter={filter}
-						setFilter={setFilter}
-						row={balancers.find((b) => b.label === filter.year?.toString())!}
-						min={{
-							supply: minSupply,
-							demand: minDemand,
-							events: eventMin,
-							ratio: minRatio,
-						}}
-						max={{
-							supply: maxSupply,
-							demand: maxDemand,
-							events: eventMax,
-							ratio: maxRatio,
-						}}
-					/>
-				) : (
-					<MatrixView
-						filter={filter}
-						setFilter={setFilter}
-						balancers={balancers}
-					/>
-				)}
-			</motion.div>
-		</AnimatePresence>
+		<div className="flex-1">
+			<div className="h-8" />
+			<div className="flex">
+				{months.map((month) => (
+					<div key={`month-${month}`} className="flex-1 text-center">
+						<p className="text-body-small">{month}</p>
+					</div>
+				))}
+			</div>
+			<div className="pl-16">
+				{years.map((year, i) => {
+					return (
+						<BalancerRow
+							key={`balancer-row-${year}`}
+							onClick={(monthIndex) => {
+								setFilter({
+									...filter,
+									year: parseInt(year),
+									month: monthIndex + 1,
+								});
+							}}
+							balancers={Object.entries(values[parseInt(year)]).map(
+								([month, { supply, demand, events }]) => {
+									return {
+										supply,
+										demand,
+										events,
+									};
+								}
+							)}
+							min={{
+								supply: minSupply,
+								demand: minDemand,
+								events: eventMin,
+								ratio: minRatio,
+							}}
+							max={{
+								supply: maxSupply,
+								demand: maxDemand,
+								events: eventMax,
+								ratio: maxRatio,
+							}}
+							index={i}
+							label={year}
+						/>
+					);
+				})}
+			</div>
+		</div>
 	);
 };
 
-export default Body;
+export default MatrixView;
