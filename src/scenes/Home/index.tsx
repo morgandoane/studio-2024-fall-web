@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Header from './components/Header';
 import Body from './components/Body';
-import Filters from './components/Filters';
+import Navigator from './components/Navigator';
 
 const Home: FC = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -32,10 +32,20 @@ const Home: FC = () => {
 	};
 
 	return (
-		<div className="h-screen overflow-y-auto overflow-x-hidden">
-			<Header />
-			<Filters filter={filter} setFilter={setFilter} />
-			<Body filter={filter} setFilter={setFilter} />
+		<div className="h-screen overflow-hidden flex flex-col overflow-y-auto">
+			<div className="flex justify-center pb-48">
+				<div className="flex-1 max-w-screen-xl">
+					<Header />
+					<div className="flex flex-grow">
+						<div className="sticky top-0 h-screen overflow-y-auto">
+							<Navigator filter={filter} setFilter={setFilter} />
+						</div>
+						<div className="flex-grow overflow-y-auto">
+							<Body filter={filter} setFilter={setFilter} />
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 };

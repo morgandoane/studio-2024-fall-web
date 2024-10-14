@@ -100,16 +100,16 @@ const Body: FC<BodyProps> = ({ filter }) => {
 	];
 
 	return (
-		<div className="flex justify-center">
-			<div className="flex-1 max-w-screen-lg">
-				<div className="h-8" />
-				<div className="flex">
-					{months.map((month) => (
-						<div key={`month-${month}`} className="flex-1 text-center">
-							<p className="text-body-small">{month}</p>
-						</div>
-					))}
-				</div>
+		<div className="flex-1">
+			<div className="h-8" />
+			<div className="flex">
+				{months.map((month) => (
+					<div key={`month-${month}`} className="flex-1 text-center">
+						<p className="text-body-small">{month}</p>
+					</div>
+				))}
+			</div>
+			<div className="pl-16">
 				{years.map((year, i) => {
 					return (
 						<BalancerRow
@@ -140,7 +140,6 @@ const Body: FC<BodyProps> = ({ filter }) => {
 						/>
 					);
 				})}
-				<div className="h-48" />
 			</div>
 		</div>
 	);
