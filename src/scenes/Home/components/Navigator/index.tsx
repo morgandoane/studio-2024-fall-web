@@ -148,10 +148,10 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
           <h2>Supply Map</h2>
           <div ref={gotSupplyContainer}></div>
         </div>
-        <div>
+        {/* <div>
           <h2>Demand Map</h2>
           <div ref={gotDemandContainer}></div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -1,0 +1,5 @@
+.province:hover {
+  fill: #f00;
+  cursor: pointer;
+  transition: fill 0.3s;
+}

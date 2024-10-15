@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import topoData from "./provinces-topo-simple.json";
 import { Filter } from "@data/useData";
+import "./map.css";
 
 interface CityData {
   lon: number;
@@ -74,7 +75,7 @@ const KoreaMap: FC<KoreaMapProps> = ({ width, height, setFilter, filter }) => {
     const projection = d3
       .geoMercator()
       .center(center)
-      .scale(2000)
+      .scale(2600)
       .translate([width / 2, height / 2]);
 
     const path = d3.geoPath().projection(projection);
