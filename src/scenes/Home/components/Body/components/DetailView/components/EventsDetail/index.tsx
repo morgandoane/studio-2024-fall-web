@@ -4,7 +4,6 @@ import { FC } from 'react';
 import EventCard from './components/EventCard';
 
 export interface EventsDetailProps {
-	sideWidth: number;
 	events: Event[];
 }
 

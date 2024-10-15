@@ -6,6 +6,10 @@ import Headline from './components/Headline';
 import useKeyboardControls from './useKeyboardControls';
 import { months } from '@utils/months';
 import EventsDetail from './components/EventsDetail';
+import DemandDetail from './components/DemandDetail';
+import Rings from '@components/display/Balancer/components/Rings';
+import { getGradientColor } from '@utils/getGradientColor';
+import { Reorder } from 'framer-motion';
 
 export interface DetailViewProps {
 	filter: Filter;
@@ -46,6 +50,17 @@ const DetailView: FC<DetailViewProps> = ({
 
 	const sideWidth = 240;
 
+	const balancerProps = row.balancers[month - 1];
+
+	const ratio = balancerProps.supply / balancerProps.demand;
+
+	const color = getGradientColor(
+		['#3c8a1f', '#50b011', '#dfd73b', '#e39d42', '#d55940'].reverse(),
+		ratio,
+		min.ratio,
+		max.ratio
+	);
+
 	return (
 		<div className="pl-12 pt-12">
 			<p className="text-heading-4">
@@ -69,8 +84,11 @@ const DetailView: FC<DetailViewProps> = ({
 				max={max}
 			/>
 			<div className="h-12" />
-			<p className="text-heading-5 pb-2">Red Cross Events</p>
-			<EventsDetail sideWidth={sideWidth} events={events} />
+			<p className="text-heading-5 pb-4">Red Cross Events</p>
+			<EventsDetail events={events} />
+			<div className="h-12" />
+			<p className="text-heading-5 pb-4">Blood Demand</p>
+			<DemandDetail demand={demand} />
 		</div>
 	);
 };
