@@ -46,15 +46,13 @@ export class AbstractMapCanvas {
     // use this data
     this.data = data;
     // now we have to set the size for each city
-    const maxUnit = Math.max(...Array.from(this.data.values()));
-    const minUnit = Math.min(...Array.from(this.data.values()));
     for (const [city, value] of this.data) {
       //   console.log(city, size);
       // check if cityRenderData has this city
       this.cityRenderData.get(city)!.unit = value;
     }
-    this.maxUnit = maxUnit;
-    this.minUnit = minUnit;
+    this.maxUnit = maxVal;
+    this.minUnit = minVal;
   }
 
   initializeCityLocation() {
@@ -182,6 +180,7 @@ export class AbstractMapCanvas {
   getCitySize(city: KR_CITIES) {
     const maxSize = Math.max(this.p5.width, this.p5.height) / 4;
     const minSize = Math.min(this.p5.width, this.p5.height) / 16;
+
     const cityData = this.cityRenderData.get(city)!;
     const size = this.p5.map(
       cityData.unit,
@@ -216,7 +215,6 @@ export class AbstractMapCanvas {
         maxWidth = width;
       }
     }
-
     return maxWidth;
   }
 

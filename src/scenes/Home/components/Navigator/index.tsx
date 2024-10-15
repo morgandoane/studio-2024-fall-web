@@ -1,12 +1,11 @@
 import { Filter, useData } from "@data/useData";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AbstractMapCanvas } from "./canvas";
 import P5 from "p5";
 import KR_CITIES from "@utils/cities";
-import CityFilter from "@scenes/Dashboard/components/Filters/components/CityFilter";
-import CityMap from "@scenes/Dashboard/components/Filters/components/CityFilter/components/CityMap";
 import KoreaMap from "./map";
-import MapResizer from "./mapResizer";
+import Resizer from "./mapResizer";
+import AbstractMap from "./abstractMap";
 
 export interface NavigatorProps {
   filter: Filter;
@@ -71,6 +70,7 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
       };
       p5.draw = () => {
         p5.clear();
+        p5.rect(0, 0, width, height);
         abstractMapCanvas.render();
       };
     }, supplyContainer);
@@ -79,8 +79,38 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
     };
   }, [supplyContainer]);
 
+  const allDataFilteredByYear = useMemo(() => {
+    const year = filter.year;
+    if (!allData || !year) {
+      return null;
+    }
+    return {
+      supply: allData.supply.filter((s) => s.year === year),
+      demand: allData.demand.filter((d) => d.year === year),
+      events: allData.events.filter((e) => e.year === year),
+    };
+  }, [allData, filter.year]);
+
+  const sumOfAllDonationPerCity = useMemo(() => {
+    const citySum = new Map<string, number>();
+    for (const s of allData.supply) {
+      if (!citySum.has(s.city)) {
+        citySum.set(s.city, 0);
+      }
+      citySum.set(s.city, citySum.get(s.city)! + s.total_unit);
+    }
+    return citySum;
+  }, [allData]);
+
+  const maxDonation = useMemo(() => {
+    return Math.max(...Array.from(sumOfAllDonationPerCity.values()));
+  }, [sumOfAllDonationPerCity]);
+  const minDonation = useMemo(() => {
+    return Math.min(...Array.from(sumOfAllDonationPerCity.values()));
+  }, [sumOfAllDonationPerCity]);
+
   useEffect(() => {
-    if (!filteredData) {
+    if (!allDataFilteredByYear) {
       return;
     }
     if (!supplyCanvasRef.current) {
@@ -91,6 +121,7 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
     let maxDemand = 0;
     let minSupply = Number.MAX_SAFE_INTEGER;
     let minDemand = Number.MAX_SAFE_INTEGER;
+    const filteredData = allDataFilteredByYear;
     // sum by city
     filteredData.supply.forEach((s) => {
       const city = s.city as KR_CITIES;
@@ -130,24 +161,33 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
     const maxVal = Math.max(maxSupply, maxDemand);
     const minVal = Math.min(minSupply, minDemand);
     supplyCanvasRef.current.initializeCitySize(supplyData, minVal, maxVal);
-  }, [filteredData]);
+  }, [allDataFilteredByYear, supplyContainer]);
 
   return (
     <div className="sticky top-0 h-full border-r border-gray-200">
       <div className="p-6 h-full min-w-72 w-72 flex flex-col">
-        <h2>Supply Map</h2>
-        <MapResizer>
+        <h2>Heat Map</h2>
+        <Resizer>
           <KoreaMap
             width={50}
             height={50}
             setFilter={setFilter}
             filter={filter}
+            filteredData={allData}
+            maxDonation={maxDonation}
+            minDonation={minDonation}
           />
-        </MapResizer>
-        <div className="flex-1">
-          <h2>Supply Map</h2>
-          <div ref={gotSupplyContainer}></div>
-        </div>
+        </Resizer>
+        <h2>Bubble Map</h2>
+        <Resizer>
+          {/* <div ref={gotSupplyContainer}></div> */}
+          <AbstractMap
+            filter={filter}
+            filteredData={allData}
+            width={50}
+            height={50}
+          />
+        </Resizer>
         {/* <div>
           <h2>Demand Map</h2>
           <div ref={gotDemandContainer}></div>

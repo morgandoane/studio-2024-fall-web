@@ -1,15 +1,19 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useEffect, useMemo, useRef } from "react";
 
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import topoData from "./provinces-topo-simple.json";
 import { Filter } from "@data/useData";
 import "./map.css";
+import cityData from "./cities.json";
+import { Supply } from "@data/supply/Supply";
+import { Demand } from "@data/demand/Demand";
+import { Event } from "@data/events/Event";
 
 interface CityData {
   lon: number;
   lat: number;
-  pop: string;
+  donation: number;
   name: string;
 }
 
@@ -18,20 +22,94 @@ interface KoreaMapProps {
   height: number;
   setFilter: (newFilter: Filter) => void;
   filter: Filter;
+  filteredData: {
+    supply: Supply[];
+    demand: Demand[];
+    events: Event[];
+  } | null;
+  maxDonation: number;
+  minDonation: number;
 }
 
-const KoreaMap: FC<KoreaMapProps> = ({ width, height, setFilter, filter }) => {
+const KoreaMap: FC<KoreaMapProps> = ({
+  width,
+  height,
+  setFilter,
+  filter,
+  filteredData,
+  maxDonation,
+  minDonation,
+}) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  const cityGroupedData: {
+    supply: Map<string, number>;
+    demand: Map<string, number>;
+    events: Map<string, number>;
+  } = useMemo(() => {
+    if (!filteredData)
+      return {
+        supply: new Map(),
+        demand: new Map(),
+        events: new Map(),
+      };
+    const supplyData = new Map<string, number>();
+    const demandData = new Map<string, number>();
+    const eventData = new Map<string, number>();
+
+    filteredData.supply.forEach((s) => {
+      const city = s.city;
+      if (!supplyData.has(city)) {
+        supplyData.set(city, 0);
+      }
+      supplyData.set(city, supplyData.get(city)! + s.total_unit);
+    });
+
+    filteredData.demand.forEach((d) => {
+      const city = d.city;
+      if (!demandData.has(city)) {
+        demandData.set(city, 0);
+      }
+      demandData.set(city, demandData.get(city)! + d.unit);
+    });
+
+    filteredData.events.forEach((e) => {
+      const city = e.city;
+      if (!eventData.has(city)) {
+        eventData.set(city, 0);
+      }
+      eventData.set(city, eventData.get(city)! + 1);
+    });
+
+    const cityData: CityData[] = [];
+    supplyData.forEach((value, key) => {
+      cityData.push({
+        lon: +cityData.find((c) => c.name === key)?.lon!,
+        lat: +cityData.find((c) => c.name === key)?.lat!,
+        donation: value,
+        name: key,
+      });
+    });
+
+    return {
+      supply: supplyData,
+      demand: demandData,
+      events: eventData,
+    };
+  }, [filteredData]);
 
   useEffect(() => {
     if (!svgRef.current) return;
     // clear svg
     d3.select(svgRef.current).selectAll("*").remove();
 
+    const minDonation = d3.min(cityGroupedData.supply.values());
+    const maxDonation = d3.max(cityGroupedData.supply.values());
+
     const colorScale = d3
       .scaleLinear<string>()
-      .range(["yellowgreen", "yellow"])
-      .domain([20, 50]);
+      .range(["rgba(255,0,0,0.1)", "rgba(255,0,0,0.8)"])
+      .domain([minDonation, maxDonation] as [number, number]);
 
     const svg = d3
       .select(svgRef.current)
@@ -40,6 +118,7 @@ const KoreaMap: FC<KoreaMapProps> = ({ width, height, setFilter, filter }) => {
 
     const map = svg.append("g").attr("id", "map");
     const points = svg.append("g").attr("id", "cities");
+    const lines = svg.append("g").attr("id", "lines");
 
     const radius = d3.scaleSqrt().domain([0, 1e6]).range([0, 15]);
 
@@ -90,7 +169,18 @@ const KoreaMap: FC<KoreaMapProps> = ({ width, height, setFilter, filter }) => {
       .enter()
       .append("path")
       .attr("class", (d: any) => `province c${d.properties.code}`)
-      .attr("stroke", "white")
+      .attr("fill", (d: any) => {
+        const name = d.properties.name_eng;
+        if (filter.city && filter.city !== name) {
+          return "rgba(255,255,255,0.1)";
+        }
+        if (cityGroupedData.supply.has(name)) {
+          return colorScale(cityGroupedData.supply.get(name)!);
+        } else {
+          return "rgba(255,255,255,0.1)";
+        }
+      })
+      .attr("stroke", "rgba(0,0,0,0.2)")
       .attr("d", path as any)
       .on("click", (e, d: any) => {
         setFilter({
@@ -100,27 +190,62 @@ const KoreaMap: FC<KoreaMapProps> = ({ width, height, setFilter, filter }) => {
         console.log(d.properties.name_eng);
       });
 
-    d3.csv("cities.csv").then((data: d3.DSVParsedArray<CityData> | any) => {
-      points
-        .selectAll("circle")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr("cx", (d: any) => projection([+d.lon, +d.lat])![0])
-        .attr("cy", (d: any) => projection([+d.lon, +d.lat])![1])
-        .attr("r", (d: any) => 10 * Math.sqrt(+d.pop))
-        .style("fill", (d: any) => colorScale(+d.pop));
+    // d3.json(cityData).then((data: any) => {
+    // make a line that protrudes out of the circle horizontally
+    lines
+      .selectAll("line")
+      .data(cityData)
+      .enter()
+      .append("line")
+      .attr("x1", (d: any) => {
+        const proj = projection([+d.lon, +d.lat])![0];
+        return projection([+d.lon, +d.lat])![0];
+      })
+      .attr("y1", (d: any) => projection([+d.lon, +d.lat])![1])
+      .attr("x2", (d: any) => {
+        const proj = projection([+d.lon, +d.lat])![0];
+        return proj;
+      })
+      .attr("y2", (d: any) => projection([+d.lon, +d.lat])![1])
+      .style("stroke", "black")
+      .style("stroke-width", 2);
 
-      points
-        .selectAll("text")
-        .data(data)
-        .enter()
-        .append("text")
-        .attr("x", (d: any) => projection([+d.lon, +d.lat])![0])
-        .attr("y", (d: any) => projection([+d.lon, +d.lat])![1] + 5)
-        .text((d: any) => d.name);
-    });
-  }, [svgRef, width, height]);
+    // points
+    //   .selectAll("circle")
+    //   .data(cityData)
+    //   .enter()
+    //   .append("circle")
+    //   .attr("class", "city_bubble")
+    //   .attr("cx", (d: any) => projection([+d.lon, +d.lat])![0])
+    //   .attr("cy", (d: any) => projection([+d.lon, +d.lat])![1])
+    //   .attr("r", (d: any) => 10)
+    //   .style("fill", (d: any) => colorScale(+d.pop))
+    //   .style("opacity", 0.5);
+
+    // points
+    //   .selectAll("text")
+    //   .data(cityData)
+    //   .enter()
+    //   .append("text")
+    //   .attr("class", "city_label")
+    //   .attr(
+    //     "x",
+    //     (d: any) => projection([+d.lon, +d.lat])![0] - d.name.length * 2.5
+    //   )
+    //   .attr("y", (d: any) => projection([+d.lon, +d.lat])![1] + 5)
+    //   .text((d: any) => d.name)
+    //   .style("font-size", "10px")
+    //   .style("fill", "black");
+    // });
+  }, [
+    svgRef,
+    width,
+    height,
+    cityGroupedData,
+    maxDonation,
+    minDonation,
+    filter.city,
+  ]);
 
   return (
     <div id="chart">

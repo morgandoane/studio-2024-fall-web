@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-type ChartResizerProps<T> = T & {
+type Resizer<T> = T & {
   children: React.ReactElement<{
     width: number;
     height: number;
   }>;
 };
 
-const MapResizer = <T,>({ children }: ChartResizerProps<T>) => {
+const Resizer = <T,>({ children }: Resizer<T>) => {
   // add resize observer here
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [containerHeight, setContainerHeight] = useState<number>(0);
@@ -54,4 +54,4 @@ const MapResizer = <T,>({ children }: ChartResizerProps<T>) => {
   );
 };
 
-export default MapResizer;
+export default Resizer;
