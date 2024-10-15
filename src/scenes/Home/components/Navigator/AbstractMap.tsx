@@ -1,10 +1,21 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import * as d3 from "d3";
 import { AbstractMapCanvas } from "./canvas";
 import KR_CITIES from "@utils/cities";
 import { Filter } from "@data/useData";
 import { Supply } from "@data/supply/Supply";
 import { Demand } from "@data/demand/Demand";
 import { Event } from "@data/events/Event";
+import topoData from "./provinces-topo-simple.json";
+import cityData from "./cities.json";
+import * as topojson from "topojson-client";
 import P5 from "p5";
 
 interface AbstractMapProps {
@@ -27,6 +38,34 @@ const AbstractMap: FC<AbstractMapProps> = ({
   const [supplyContainer, setSupplyContainer] = useState<HTMLDivElement | null>(
     null
   );
+  const projection = useMemo(() => {
+    const geojson: any = topojson.feature(
+      topoData as any,
+      topoData.objects["provinces-geo"] as any
+    );
+
+    const center = d3.geoCentroid(geojson as any);
+    return d3
+      .geoMercator()
+      .center(center)
+      .scale(2600)
+      .translate([width / 2, height / 2]);
+  }, [width, height]);
+
+  const cityProjectionPoints = useMemo(() => {
+    const output = new Map<KR_CITIES, [number, number]>();
+    if (!projection) {
+      return output;
+    }
+    cityData.forEach((city: any) => {
+      const x = projection([city.lon, city.lat])![0];
+      const y = projection([city.lon, city.lat])![1];
+      output.set(city.name as KR_CITIES, [x, y]);
+    });
+    return output;
+  }, [projection]);
+
+  // console.log(cityProjectionPoints);
   const supplyCanvasRef = useRef<AbstractMapCanvas | null>(null);
 
   const gotSupplyContainer = useCallback((element: HTMLDivElement) => {
@@ -89,8 +128,6 @@ const AbstractMap: FC<AbstractMapProps> = ({
         minDemand = value;
       }
     });
-
-    console.log(filteredData);
 
     const maxVal = Math.max(maxSupply, maxDemand);
     const minVal = Math.min(minSupply, minDemand);

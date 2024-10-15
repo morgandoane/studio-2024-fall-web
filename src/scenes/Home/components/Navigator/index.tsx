@@ -5,7 +5,7 @@ import P5 from "p5";
 import KR_CITIES from "@utils/cities";
 import KoreaMap from "./map";
 import Resizer from "./mapResizer";
-import AbstractMap from "./abstractMap";
+import AbstractMap from "./AbstractMap";
 
 export interface NavigatorProps {
   filter: Filter;
@@ -167,7 +167,7 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
     <div className="sticky top-0 h-full border-r border-gray-200">
       <div className="p-6 h-full min-w-72 w-72 flex flex-col">
         <h2>Heat Map</h2>
-        <Resizer>
+        {/* <Resizer>
           <KoreaMap
             width={50}
             height={50}
@@ -177,7 +177,7 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
             maxDonation={maxDonation}
             minDonation={minDonation}
           />
-        </Resizer>
+        </Resizer> */}
         <h2>Bubble Map</h2>
         <Resizer>
           {/* <div ref={gotSupplyContainer}></div> */}

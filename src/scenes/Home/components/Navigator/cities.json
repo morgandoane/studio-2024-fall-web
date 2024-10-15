@@ -8,66 +8,66 @@
     },
     {
         "rank": 2,
-        "name": "Busan",
-        "pop": 3414000,
-        "lat": 35.1796,
-        "lon": 129.0756
-    },
-    {
-        "rank": 3,
-        "name": "Daegu/Gyeongbuk",
-        "pop": 2473000,
-        "lat": 35.8722,
-        "lon": 128.6025
-    },
-    {
-        "rank": 4,
-        "name": "Daejeon/Chungnam",
-        "pop": 1537000,
-        "lat": 36.3504,
-        "lon": 127.3845
-    },
-    {
-        "rank": 5,
-        "name": "Gangwon",
-        "pop": 1534000,
-        "lat": 37.8228,
-        "lon": 128.1555
-    },
-    {
-        "rank": 6,
         "name": "Gyeonggi",
         "pop": 13480000,
         "lat": 37.4138,
         "lon": 127.5183
     },
     {
-        "rank": 7,
+        "rank": 3,
         "name": "Gyeongnam",
         "pop": 3320000,
         "lat": 35.2282,
         "lon": 128.6913
     },
     {
-        "rank": 8,
+        "rank": 4,
+        "name": "Busan",
+        "pop": 3414000,
+        "lat": 35.1796,
+        "lon": 129.0756
+    },
+    {
+        "rank": 5,
         "name": "Incheon",
         "pop": 2952000,
         "lat": 37.4563,
         "lon": 126.7052
     },
     {
+        "rank": 6,
+        "name": "Daegu/Gyeongbuk",
+        "pop": 2473000,
+        "lat": 35.8722,
+        "lon": 128.6025
+    },
+    {
+        "rank": 7,
+        "name": "Daejeon/Chungnam",
+        "pop": 1537000,
+        "lat": 36.3504,
+        "lon": 127.3845
+    },
+    {
+        "rank": 8,
+        "name": "Ulsan",
+        "pop": 1155000,
+        "lat": 35.5384,
+        "lon": 129.3114
+    },
+    {
         "rank": 9,
-        "name": "Jeju",
-        "pop": 695000,
-        "lat": 33.4996,
-        "lon": 126.5312
+        "name": "Chungbuk",
+        "pop": 1600000,
+        "lat": 36.6424,
+        "lon": 127.4890
     },
     {
         "rank": 10,
-        "name": "Jeonbuk",
-        "pop": 1850000,
-        "lat": 35.8206,
-        "lon": 127.1086
+        "name": "Gangwon",
+        "pop": 1534000,
+        "lat": 37.8228,
+        "lon": 128.1555
     },
     {
         "rank": 11,
@@ -78,9 +78,16 @@
     },
     {
         "rank": 12,
-        "name": "Ulsan",
-        "pop": 1155000,
-        "lat": 35.5384,
-        "lon": 129.3114
+        "name": "Jeonbuk",
+        "pop": 1850000,
+        "lat": 35.8206,
+        "lon": 127.1086
+    },
+    {
+        "rank": 13,
+        "name": "Jeju",
+        "pop": 695000,
+        "lat": 33.4996,
+        "lon": 126.5312
     }
 ]

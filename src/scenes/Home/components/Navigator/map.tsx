@@ -142,7 +142,7 @@ const KoreaMap: FC<KoreaMapProps> = ({
     //   .attr("dy", "1.3em")
     //   .text(d3.format(".1s"));
     // const features = topojson.feature(objects, topoData.objects.provinces);
-    console.log(topoData);
+    // console.log(topoData);
 
     const geojson: any = topojson.feature(
       topoData as any,
