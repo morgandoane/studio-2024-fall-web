@@ -14,7 +14,8 @@ const useKeyboardControls = (
 				e.preventDefault();
 				e.stopPropagation();
 				if (filter.month === 1) {
-					setFilter({ ...filter, month: 12, year: filter.year! - 1 });
+					if (filter.year === minYear) return;
+					else setFilter({ ...filter, month: 12, year: filter.year! - 1 });
 				} else {
 					setFilter({ ...filter, month: filter.month! - 1 });
 				}
@@ -22,7 +23,8 @@ const useKeyboardControls = (
 				e.preventDefault();
 				e.stopPropagation();
 				if (filter.month === 12) {
-					setFilter({ ...filter, month: 1, year: filter.year! + 1 });
+					if (filter.year === maxYear) return;
+					else setFilter({ ...filter, month: 1, year: filter.year! + 1 });
 				} else {
 					setFilter({ ...filter, month: filter.month! + 1 });
 				}
