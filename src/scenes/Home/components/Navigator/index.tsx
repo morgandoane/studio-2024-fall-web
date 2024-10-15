@@ -3,6 +3,10 @@ import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { AbstractMapCanvas } from "./canvas";
 import P5 from "p5";
 import KR_CITIES from "@utils/cities";
+import CityFilter from "@scenes/Dashboard/components/Filters/components/CityFilter";
+import CityMap from "@scenes/Dashboard/components/Filters/components/CityFilter/components/CityMap";
+import KoreaMap from "./map";
+import MapResizer from "./mapResizer";
 
 export interface NavigatorProps {
   filter: Filter;
@@ -131,7 +135,16 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
   return (
     <div className="sticky top-0 h-full border-r border-gray-200">
       <div className="p-6 h-full min-w-72 w-72 flex flex-col">
-        <div>
+        <h2>Supply Map</h2>
+        <MapResizer>
+          <KoreaMap
+            width={50}
+            height={50}
+            setFilter={setFilter}
+            filter={filter}
+          />
+        </MapResizer>
+        <div className="flex-1">
           <h2>Supply Map</h2>
           <div ref={gotSupplyContainer}></div>
         </div>

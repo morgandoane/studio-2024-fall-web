@@ -453,7 +453,6 @@ export class AbstractMapCanvas {
         }
       }
       y = (minY + maxY) / 2 - this.getCitySize(city) / 2;
-      console.log(minY);
     } else if (top && !left) {
       for (const tcity of top) {
         if (renderedFlag.get(tcity)) {
