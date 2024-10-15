@@ -5,6 +5,7 @@ import BalancerDetail from './components/BalancerDetail';
 import Headline from './components/Headline';
 import useKeyboardControls from './useKeyboardControls';
 import { months } from '@utils/months';
+import EventsDetail from './components/EventsDetail';
 
 export interface DetailViewProps {
 	filter: Filter;
@@ -37,11 +38,13 @@ const DetailView: FC<DetailViewProps> = ({
 	const year = filter.year!;
 
 	const {
-		data: { supply, demand },
+		data: { supply, demand, events },
 	} = useData(filter);
 
 	const totalSupply = supply.reduce((acc, s) => acc + s.total_unit, 0);
 	const totalDemand = demand.reduce((acc, d) => acc + d.unit, 0);
+
+	const sideWidth = 240;
 
 	return (
 		<div className="pl-12 pt-12">
@@ -55,7 +58,7 @@ const DetailView: FC<DetailViewProps> = ({
 				year={year}
 				month={month}
 			/>
-			<div className="h-8" />
+			<div className="h-12" />
 			<BalancerDetail
 				row={row}
 				focus={month - 1}
@@ -65,6 +68,9 @@ const DetailView: FC<DetailViewProps> = ({
 				min={min}
 				max={max}
 			/>
+			<div className="h-12" />
+			<p className="text-heading-5 pb-2">Red Cross Events</p>
+			<EventsDetail sideWidth={sideWidth} events={events} />
 		</div>
 	);
 };
