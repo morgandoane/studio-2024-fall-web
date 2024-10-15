@@ -67,6 +67,7 @@ const DetailView: FC<DetailViewProps> = ({
 				{months[month - 1].long}, {year}
 			</p>
 			<Headline
+				color={color}
 				supply={totalSupply}
 				demand={totalDemand}
 				city={filter.city}
