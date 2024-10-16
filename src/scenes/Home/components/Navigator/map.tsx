@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useRef } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
@@ -41,6 +41,12 @@ const KoreaMap: FC<KoreaMapProps> = ({
   minDonation,
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const [tooltip, setTooltip] = useState({
+    opacity: 0,
+    x: 0,
+    y: 0,
+    content: "",
+  });
 
   const cityGroupedData: {
     supply: Map<string, number>;
@@ -187,7 +193,25 @@ const KoreaMap: FC<KoreaMapProps> = ({
           ...filter,
           city: d.properties.name_eng,
         });
+      })
+      .on("mousemove", (e, d: any) => {
+        if (!d.properties.name_eng) {
+          setTooltip((prev) => ({ ...prev, opacity: 0 }));
+          return;
+        }
+        const [x, y] = d3.pointer(e);
+        const proj = projection(d3.geoCentroid(d))!;
+        setTooltip({
+          opacity: 1,
+          x: proj[0],
+          y: proj[1],
+          content: `${d.properties.name_eng}`,
+        });
       });
+
+    svg.on("mouseleave", () => {
+      setTooltip((prev) => ({ ...prev, opacity: 0 }));
+    });
 
     // d3.json(cityData).then((data: any) => {
     // make a line that protrudes out of the circle horizontally
@@ -248,6 +272,24 @@ const KoreaMap: FC<KoreaMapProps> = ({
 
   return (
     <div id="chart">
+      <pre
+        className="tooltip"
+        style={{
+          zIndex: 100,
+          opacity: tooltip.opacity,
+          position: "absolute",
+          left: `${tooltip.x}px`,
+          top: `${tooltip.y}px`,
+          transform: "translate(-50%,0%)",
+          backgroundColor: "white",
+          border: "1px solid rgba(0,0,0,0.1)",
+          padding: "8px",
+          pointerEvents: "none", // Makes the tooltip not block mouse events
+          transition: "opacity 0.3s ease, left 0.2s ease, top 0.2s ease", // Smooth transitions
+        }}
+      >
+        {tooltip.content}
+      </pre>
       <svg ref={svgRef}></svg>
     </div>
   );

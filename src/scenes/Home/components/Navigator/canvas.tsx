@@ -38,7 +38,6 @@ export class AbstractMapCanvas {
   selectedCity: KR_CITIES | null = null;
   setFilter: (newFilter: Filter) => void;
   filter: Filter;
-  setMapSelectedCity: React.Dispatch<React.SetStateAction<KR_CITIES | null>>;
 
   constructor(
     p5: p5,
@@ -46,8 +45,7 @@ export class AbstractMapCanvas {
     width: number,
     height: number,
     setFilter: (newFilter: Filter) => void,
-    filter: Filter,
-    setMapSelectedCity: React.Dispatch<React.SetStateAction<KR_CITIES | null>>
+    filter: Filter
   ) {
     this.p5 = p5;
     this.data = data;
@@ -55,7 +53,6 @@ export class AbstractMapCanvas {
     this.initializeCityLocation();
     this.setFilter = setFilter;
     this.filter = filter;
-    this.setMapSelectedCity = setMapSelectedCity;
   }
 
   intialize(data: Map<KR_CITIES, number>, minVal: number, maxVal: number) {
@@ -471,7 +468,6 @@ export class AbstractMapCanvas {
         ...this.filter,
         city: city,
       });
-      // this.setMapSelectedCity(city);
     }
   }
 
@@ -480,8 +476,11 @@ export class AbstractMapCanvas {
     const y = this.p5.mouseY - this.offset.y;
     const city = this.getCityByXY(x, y);
     if (city) {
+      // change pointer
+      this.p5.cursor(this.p5.HAND);
       this.hoveredCity = city;
     } else {
+      this.p5.cursor(this.p5.ARROW);
       this.hoveredCity = null;
     }
   }
