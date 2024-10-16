@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import Balancer, { BalancerProps } from '../Balancer';
 import { useSize } from '@hooks/useSize';
+import { motion } from 'framer-motion';
 
 export interface BalancerRowProps {
 	balancers: BalancerProps['value'][];
@@ -20,31 +21,23 @@ const BalancerRow: FC<BalancerRowProps> = ({
 	onClick,
 }) => {
 	const ref = useRef<HTMLDivElement>(null);
-	const { width } = useSize(ref);
+	const { width } = useSize(ref, 'row');
 
 	const [entered, setEntered] = useState(false);
 
 	useEffect(() => {
-		if (width) {
-			const delay = 75 * rowIndex;
-
-			const timeout = setTimeout(() => {
-				setEntered(true);
-			}, delay);
-
-			return () => clearTimeout(timeout);
+		if (width > 50) {
+			setEntered(true);
 		}
 	}, [width]);
 
 	return (
-		<div
+		<motion.div
 			ref={ref}
 			className="flex"
 			style={{
 				height: `${width / balancers.length}px`,
 				position: 'relative',
-				opacity: entered ? 1 : 0,
-				transition: 'opacity 0.5s ease',
 			}}
 		>
 			<p
@@ -69,7 +62,7 @@ const BalancerRow: FC<BalancerRowProps> = ({
 					index={{ row: rowIndex, col: colIndex }}
 				/>
 			))}
-		</div>
+		</motion.div>
 	);
 };
 

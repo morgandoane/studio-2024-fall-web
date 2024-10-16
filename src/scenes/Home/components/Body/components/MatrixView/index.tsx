@@ -106,7 +106,7 @@ const MatrixView: FC<MatrixViewProps> = ({ balancers, filter, setFilter }) => {
 	return (
 		<div className="flex-1">
 			<div className="h-8" />
-			<div className="flex">
+			<div className="flex pl-16">
 				{months.map((month) => (
 					<div key={`month-${month}`} className="flex-1 text-center">
 						<p className="text-body-small">{month}</p>

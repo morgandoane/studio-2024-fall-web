@@ -1,7 +1,6 @@
 import { Demand } from '@data/demand/Demand';
 import { capFirst } from '@utils/capFirst';
 import { FC } from 'react';
-import { JSONTree } from 'react-json-tree';
 
 export interface DemandDetailProps {
 	demand: Demand[];

@@ -7,9 +7,9 @@ import useKeyboardControls from './useKeyboardControls';
 import { months } from '@utils/months';
 import EventsDetail from './components/EventsDetail';
 import DemandDetail from './components/DemandDetail';
-import Rings from '@components/display/Balancer/components/Rings';
 import { getGradientColor } from '@utils/getGradientColor';
-import { Reorder } from 'framer-motion';
+import { ArrowLeftIcon } from '@heroicons/react/20/solid';
+import { Button } from '@headlessui/react';
 
 export interface DetailViewProps {
 	filter: Filter;
@@ -63,6 +63,13 @@ const DetailView: FC<DetailViewProps> = ({
 
 	return (
 		<div className="pl-12 pt-12">
+			<Button
+				onClick={() => setFilter({ ...filter, month: null, year: null })}
+				className="flex items-center mb-4"
+			>
+				<ArrowLeftIcon className="w-4 h-4 mr-2" />
+				Back
+			</Button>
 			<p className="text-heading-4">
 				{months[month - 1].long}, {year}
 			</p>
