@@ -187,7 +187,6 @@ const KoreaMap: FC<KoreaMapProps> = ({
           ...filter,
           city: d.properties.name_eng,
         });
-        console.log(d.properties.name_eng);
       });
 
     // d3.json(cityData).then((data: any) => {

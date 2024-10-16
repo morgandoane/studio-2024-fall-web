@@ -22,6 +22,7 @@ interface AbstractMapProps {
   width: number;
   height: number;
   filter: Filter;
+  setFilter: (newFilter: Filter) => void;
   filteredData: {
     supply: Supply[];
     demand: Demand[];
@@ -33,37 +34,12 @@ const AbstractMap: FC<AbstractMapProps> = ({
   filter,
   width,
   height,
+  setFilter,
   filteredData: allData,
 }) => {
   const [supplyContainer, setSupplyContainer] = useState<HTMLDivElement | null>(
     null
   );
-  const projection = useMemo(() => {
-    const geojson: any = topojson.feature(
-      topoData as any,
-      topoData.objects["provinces-geo"] as any
-    );
-
-    const center = d3.geoCentroid(geojson as any);
-    return d3
-      .geoMercator()
-      .center(center)
-      .scale(2600)
-      .translate([width / 2, height / 2]);
-  }, [width, height]);
-
-  const cityProjectionPoints = useMemo(() => {
-    const output = new Map<KR_CITIES, [number, number]>();
-    if (!projection) {
-      return output;
-    }
-    cityData.forEach((city: any) => {
-      const x = projection([city.lon, city.lat])![0];
-      const y = projection([city.lon, city.lat])![1];
-      output.set(city.name as KR_CITIES, [x, y]);
-    });
-    return output;
-  }, [projection]);
 
   // console.log(cityProjectionPoints);
   const supplyCanvasRef = useRef<AbstractMapCanvas | null>(null);
@@ -131,7 +107,7 @@ const AbstractMap: FC<AbstractMapProps> = ({
 
     const maxVal = Math.max(maxSupply, maxDemand);
     const minVal = Math.min(minSupply, minDemand);
-    supplyCanvasRef.current.initializeCitySize(supplyData, minVal, maxVal);
+    supplyCanvasRef.current.intialize(supplyData, minVal, maxVal);
   }, [allData, supplyContainer]);
 
   useEffect(() => {
@@ -144,7 +120,9 @@ const AbstractMap: FC<AbstractMapProps> = ({
         p5,
         new Map(),
         width,
-        height
+        height,
+        setFilter,
+        filter
       );
       supplyCanvasRef.current = abstractMapCanvas;
       const setup = () => {
@@ -158,11 +136,48 @@ const AbstractMap: FC<AbstractMapProps> = ({
         p5.rect(0, 0, width, height);
         abstractMapCanvas.render();
       };
+      p5.mouseClicked = () => {
+        abstractMapCanvas.mouseClicked();
+      };
+      p5.mouseMoved = () => {
+        abstractMapCanvas.mouseMoved();
+      };
+      if (!filter.city) {
+        abstractMapCanvas.setSelectedCity(null);
+      } else {
+        abstractMapCanvas.setSelectedCity(filter.city as KR_CITIES);
+      }
     }, supplyContainer);
     return () => {
       canvas.remove();
     };
   }, [supplyContainer, height]);
+
+  useEffect(() => {
+    if (!supplyCanvasRef.current) {
+      return;
+    }
+    if (!filter.city) {
+      supplyCanvasRef.current.setSelectedCity(null);
+    } else {
+      supplyCanvasRef.current.setSelectedCity(filter.city as KR_CITIES);
+    }
+  }, [filter.city, filter]);
+
+  useEffect(() => {
+    if (!supplyCanvasRef.current) {
+      return;
+    }
+    supplyCanvasRef.current.updateFilter(filter);
+  }, [filter]);
+
+  useEffect(() => {
+    if (!supplyCanvasRef.current) {
+      return;
+    }
+    supplyCanvasRef.current.updateSetFilter(setFilter);
+  }, [setFilter]);
+
   return <div ref={gotSupplyContainer}></div>;
 };
 

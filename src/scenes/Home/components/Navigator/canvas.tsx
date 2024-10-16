@@ -4,6 +4,10 @@ import topoData from "./provinces-topo-simple.json";
 import cityData from "./cities.json";
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
+import nerdamer from "nerdamer";
+import "nerdamer/Algebra";
+import "nerdamer/Solve";
+import { Filter } from "@data/useData";
 
 type CityRenderData = {
   left?: Array<KR_CITIES>;
@@ -30,24 +34,31 @@ export class AbstractMapCanvas {
   offset: { x: number; y: number } = { x: 0, y: 0 };
   renderedFlag: Map<KR_CITIES, boolean> = new Map();
   cityProjectionPoints: Map<KR_CITIES, [number, number]> = new Map();
+  hoveredCity: KR_CITIES | null = null;
+  selectedCity: KR_CITIES | null = null;
+  setFilter: (newFilter: Filter) => void;
+  filter: Filter;
+  setMapSelectedCity: React.Dispatch<React.SetStateAction<KR_CITIES | null>>;
 
   constructor(
     p5: p5,
     data: Map<KR_CITIES, number>,
     width: number,
-    height: number
+    height: number,
+    setFilter: (newFilter: Filter) => void,
+    filter: Filter,
+    setMapSelectedCity: React.Dispatch<React.SetStateAction<KR_CITIES | null>>
   ) {
     this.p5 = p5;
     this.data = data;
     this.cityRenderData = new Map();
     this.initializeCityLocation();
+    this.setFilter = setFilter;
+    this.filter = filter;
+    this.setMapSelectedCity = setMapSelectedCity;
   }
 
-  initializeCitySize(
-    data: Map<KR_CITIES, number>,
-    minVal: number,
-    maxVal: number
-  ) {
+  intialize(data: Map<KR_CITIES, number>, minVal: number, maxVal: number) {
     // use this data
     this.data = data;
     // now we have to set the size for each city
@@ -58,6 +69,7 @@ export class AbstractMapCanvas {
     }
     this.maxUnit = maxVal;
     this.minUnit = minVal;
+    this.updateProjectionPoints();
   }
 
   initializeCityLocation() {
@@ -80,6 +92,16 @@ export class AbstractMapCanvas {
       y: 0,
     });
 
+    this.cityRenderData.set(KR_CITIES.CHUNGBUK, {
+      top: [KR_CITIES.GYEONGGI, KR_CITIES.GANGWON],
+      left: [KR_CITIES.DAEJEON_CHUNGNAM],
+      right: [KR_CITIES.DAEGU_GYEONGBUK],
+      bottom: [KR_CITIES.JEONBUK],
+      unit: 0,
+      size: 0,
+      x: 0,
+      y: 0,
+    });
     this.cityRenderData.set(KR_CITIES.GANGWON, {
       left: [KR_CITIES.GYEONGGI, KR_CITIES.SEOUL],
       bottom: [KR_CITIES.CHUNGBUK, KR_CITIES.DAEGU_GYEONGBUK],
@@ -89,31 +111,9 @@ export class AbstractMapCanvas {
       y: 0,
     });
 
-    this.cityRenderData.set(KR_CITIES.GYEONGGI, {
-      top: [KR_CITIES.SEOUL],
-      left: [KR_CITIES.INCHEON],
-      right: [KR_CITIES.GANGWON],
-      bottom: [KR_CITIES.CHUNGBUK, KR_CITIES.DAEJEON_CHUNGNAM],
-      unit: 0,
-      size: 0,
-      x: 0,
-      y: 0,
-    });
-
     this.cityRenderData.set(KR_CITIES.DAEJEON_CHUNGNAM, {
       top: [KR_CITIES.GYEONGGI],
       right: [KR_CITIES.CHUNGBUK],
-      bottom: [KR_CITIES.JEONBUK],
-      unit: 0,
-      size: 0,
-      x: 0,
-      y: 0,
-    });
-
-    this.cityRenderData.set(KR_CITIES.CHUNGBUK, {
-      top: [KR_CITIES.GYEONGGI, KR_CITIES.GANGWON],
-      left: [KR_CITIES.DAEJEON_CHUNGNAM],
-      right: [KR_CITIES.DAEGU_GYEONGBUK],
       bottom: [KR_CITIES.JEONBUK],
       unit: 0,
       size: 0,
@@ -140,15 +140,7 @@ export class AbstractMapCanvas {
       x: 0,
       y: 0,
     });
-    this.cityRenderData.set(KR_CITIES.ULSAN, {
-      top: [KR_CITIES.DAEGU_GYEONGBUK],
-      left: [KR_CITIES.GYEONGNAM],
-      bottom: [KR_CITIES.BUSAN],
-      unit: 0,
-      size: 0,
-      x: 0,
-      y: 0,
-    });
+
     this.cityRenderData.set(KR_CITIES.GYEONGNAM, {
       top: [KR_CITIES.DAEGU_GYEONGBUK],
       left: [KR_CITIES.JEONBUK, KR_CITIES.JEONNAM],
@@ -166,6 +158,16 @@ export class AbstractMapCanvas {
       x: 0,
       y: 0,
     });
+    this.cityRenderData.set(KR_CITIES.ULSAN, {
+      top: [KR_CITIES.DAEGU_GYEONGBUK],
+      left: [KR_CITIES.GYEONGNAM],
+      bottom: [KR_CITIES.BUSAN],
+      unit: 0,
+      size: 0,
+      x: 0,
+      y: 0,
+    });
+
     this.cityRenderData.set(KR_CITIES.JEONNAM, {
       top: [KR_CITIES.JEONBUK],
       right: [KR_CITIES.GYEONGNAM],
@@ -175,6 +177,16 @@ export class AbstractMapCanvas {
       y: 0,
     });
     this.cityRenderData.set(KR_CITIES.JEJU, {
+      unit: 0,
+      size: 0,
+      x: 0,
+      y: 0,
+    });
+    this.cityRenderData.set(KR_CITIES.GYEONGGI, {
+      top: [KR_CITIES.SEOUL],
+      left: [KR_CITIES.INCHEON],
+      right: [KR_CITIES.GANGWON],
+      bottom: [KR_CITIES.CHUNGBUK, KR_CITIES.DAEJEON_CHUNGNAM],
       unit: 0,
       size: 0,
       x: 0,
@@ -195,111 +207,6 @@ export class AbstractMapCanvas {
       MAX_SIZE
     );
     return size;
-  }
-
-  getMapMaxWidth() {
-    // this should start from incheon
-    // the tree will collect all the branches
-    // the string will be a concatenation of the city names
-    const tree = new Map<string, Array<KR_CITIES>>();
-    const trajectory = [KR_CITIES.INCHEON];
-    // add incheon to the tree
-    const parentKey = KR_CITIES.INCHEON;
-    tree.set(parentKey, trajectory);
-    this.recursiveRight(KR_CITIES.INCHEON, trajectory, tree, parentKey);
-
-    // get values from the tree
-    let maxWidth = 0;
-    for (const [key, value] of tree) {
-      let width = 0;
-      for (const city of value) {
-        const cityWidth = this.getCitySize(city);
-        width += cityWidth;
-      }
-      if (width > maxWidth) {
-        maxWidth = width;
-      }
-    }
-    return maxWidth;
-  }
-
-  getMapMaxHeight() {
-    // this should start from seoul
-    const tree = new Map<string, Array<KR_CITIES>>();
-    const trajectory = [KR_CITIES.SEOUL];
-    const parentKey = KR_CITIES.SEOUL;
-    tree.set(parentKey, trajectory);
-    this.recursiveBottom(KR_CITIES.SEOUL, trajectory, tree, parentKey);
-
-    let maxHeight = 0;
-    for (const [key, value] of tree) {
-      let height = 0;
-      for (const city of value) {
-        const cityHeight = this.getCitySize(city);
-        height += cityHeight;
-      }
-      if (height > maxHeight) {
-        maxHeight = height;
-      }
-    }
-
-    return maxHeight;
-  }
-
-  recursiveRight(
-    city: KR_CITIES,
-    trajectory: Array<KR_CITIES>,
-    tree: Map<string, Array<KR_CITIES>>,
-    parentKey: string
-  ) {
-    const cityData = this.cityRenderData.get(city)!;
-    if (cityData.right) {
-      const newTrajectory = [...trajectory, cityData.right[0]];
-      // update the tree
-      tree.set(parentKey, newTrajectory);
-      this.recursiveRight(cityData.right[0], newTrajectory, tree, parentKey);
-      if (cityData.right.length > 1) {
-        let i = 0;
-        for (const nextCity of cityData.right) {
-          if (i === 0) {
-            i++;
-            continue;
-          }
-          const newTrajectory = [...trajectory, nextCity];
-          const newKey = newTrajectory.join("-");
-          tree.set(newKey, newTrajectory);
-          this.recursiveRight(nextCity, newTrajectory, tree, newKey);
-        }
-      }
-    }
-  }
-
-  recursiveBottom(
-    city: KR_CITIES,
-    trajectory: Array<KR_CITIES>,
-    tree: Map<string, Array<KR_CITIES>>,
-    parentKey: string
-  ) {
-    const cityData = this.cityRenderData.get(city)!;
-    if (cityData.bottom) {
-      const newTrajectory = [...trajectory, cityData.bottom[0]];
-      // update the tree
-      tree.set(parentKey, newTrajectory);
-      this.recursiveBottom(cityData.bottom[0], newTrajectory, tree, parentKey);
-      if (cityData.bottom.length > 1) {
-        let i = 0;
-        for (const nextCity of cityData.bottom) {
-          if (i === 0) {
-            i++;
-            continue;
-          }
-          const newTrajectory = [...trajectory, nextCity];
-          const newKey = newTrajectory.join("-");
-          tree.set(newKey, newTrajectory);
-          this.recursiveBottom(nextCity, newTrajectory, tree, newKey);
-        }
-      }
-    }
   }
 
   updateProjectionPoints() {
@@ -324,276 +231,24 @@ export class AbstractMapCanvas {
     });
   }
 
-  getMaxHeight() {}
-
-  findCityXY(city: KR_CITIES, renderedFlag: Map<KR_CITIES, boolean>) {
-    const top = this.cityRenderData.get(city)!.top;
-    const left = this.cityRenderData.get(city)!.left;
-
-    const renderedTop = top ? top?.map((city) => renderedFlag.get(city)) : [];
-    const renderedLeft = left
-      ? left?.map((city) => renderedFlag.get(city))
-      : [];
-
-    if (top && top.length > 0) {
-      if (renderedTop?.length != top?.length) {
-        return null;
-      }
-    }
-    if (left && left.length > 0) {
-      if (renderedLeft?.length != left?.length) {
-        return null;
-      }
-    }
-
-    let y = 0;
-    let x = 0;
-    if (top && left) {
-      // we have to consider if they are overlapping
-      let minPossibleY = Number.MAX_SAFE_INTEGER;
-      let minPossibleX = Number.MAX_SAFE_INTEGER;
-      let maxPossibleX = 0;
-      let maxPossibleY = 0;
-      let rightMost = 0;
-      let leftMost = Number.MAX_SAFE_INTEGER;
-      let topMost = Number.MAX_SAFE_INTEGER;
-      let rightMostCity = this.findRightMostCityOnY(0);
-      let bottomMostCity = this.findBottomMostCityOnX(0);
-      let bottomMost = 0;
-      let boundX = 0;
-      let boundY = 0;
-      for (const tcity of top) {
-        if (renderedFlag.get(tcity)) {
-          const tcityData = this.cityRenderData.get(tcity)!;
-          if (tcityData.y + tcityData.size < minPossibleY) {
-            minPossibleY = tcityData.y + tcityData.size;
-          }
-          if (tcityData.y + tcityData.size > maxPossibleY) {
-            maxPossibleY = tcityData.y + tcityData.size;
-            boundY = maxPossibleY;
-            bottomMostCity = tcity;
-          }
-        }
-      }
-      for (const lcity of left) {
-        if (renderedFlag.get(lcity)) {
-          const lcityData = this.cityRenderData.get(lcity)!;
-          if (lcityData.x + lcityData.size > maxPossibleX) {
-            maxPossibleX = lcityData.x + lcityData.size;
-            boundX = maxPossibleX;
-            rightMostCity = lcity;
-          }
-          if (lcityData.x < minPossibleX) {
-            minPossibleX = lcityData.x;
-          }
-        }
-      }
-
-      x = maxPossibleX;
-      y = maxPossibleY;
-
-      let leftCity = this.findCityByXY(x - 1, y);
-      if (left && rightMostCity && leftCity !== rightMostCity) {
-        // attach to the right most city
-        const rightMostCityData = this.cityRenderData.get(rightMostCity)!;
-        if (rightMostCityData.y > y) {
-          y = rightMostCityData.y;
-        }
-      }
-      //   check if there is any overlapping
-      //   const midX = (leftMost + rightMost) / 2 - this.getCitySize(city) / 2;
-      //   const midY = (topMost + bottomMost) / 2 - this.getCitySize(city) / 2;
-      //   const mostBottomCity = this.findBottomMostCityOnX(midX);
-      //   const mostRightCity = this.findRightMostCityOnY(midY);
-      //   const boundX = mostRightCity
-      //     ? this.cityRenderData.get(mostRightCity)!.x +
-      //       this.cityRenderData.get(mostRightCity)!.size
-      //     : 0;
-      //   const boundY = mostBottomCity
-      //     ? this.cityRenderData.get(mostBottomCity)!.y +
-      //       this.cityRenderData.get(mostBottomCity)!.size
-      //     : 0;
-      //   if (mostBottomCity && mostRightCity) {
-      //     x = 0;
-      //     y = 0;
-      //   } else if (mostBottomCity && !mostRightCity) {
-      //     x = midX;
-      //     y = boundY;
-      //   } else if (!mostBottomCity && mostRightCity) {
-      //     x = boundX;
-      //     y = midY;
-      //   } else {
-      //     x = midX;
-      //     y = midY;
-      //   }
-      //   x = boundX;
-      //   y = boundY;
-      //   x = minPossibleX;
-      //   y = minPossibleY;
-
-      //   const mostRightCity = this.findRightMostCityOnY(minPossibleY);
-      //   const boundX = mostRightCity
-      //     ? this.cityRenderData.get(mostRightCity)!.x +
-      //       this.cityRenderData.get(mostRightCity)!.size
-      //     : 0;
-
-      //   const mostBottomCity = this.findBottomMostCityOnX(maxPossibleX);
-      //   const boundY = mostBottomCity
-      //     ? this.cityRenderData.get(mostBottomCity)!.y +
-      //       this.cityRenderData.get(mostBottomCity)!.size
-      //     : 0;
-      //   if (mostBottomCity && mostRightCity) {
-      //     x = boundX;
-      //     y = boundY;
-      //   } else if (mostBottomCity && !mostRightCity) {
-      //     x = minPossibleX;
-      //     y = boundY;
-      //   } else if (!mostBottomCity && mostRightCity) {
-      //     x = boundX;
-      //     y = minPossibleY;
-      //   } else {
-      //     x = maxPossibleX;
-      //     y = maxPossibleY;
-      //   }
-      //   x = boundX;
-      //   y = boundY;
-    } else if (!top && left) {
-      // we will find median of the left cities
-      let minY = Number.MAX_SAFE_INTEGER;
-      let maxY = 0;
-      for (const lcity of left) {
-        if (renderedFlag.get(lcity)) {
-          const lcityData = this.cityRenderData.get(lcity)!;
-          if (lcityData.y < minY) {
-            minY = lcityData.y;
-          }
-          if (lcityData.y + lcityData.size > maxY) {
-            maxY = lcityData.y + lcityData.size;
-          }
-          if (lcityData.x + lcityData.size > x) {
-            x = lcityData.x + lcityData.size;
-          }
-        }
-      }
-      y = (minY + maxY) / 2 - this.getCitySize(city) / 2;
-    } else if (top && !left) {
-      for (const tcity of top) {
-        if (renderedFlag.get(tcity)) {
-          const tcityData = this.cityRenderData.get(tcity)!;
-          if (tcityData.y + tcityData.size > y) {
-            y = tcityData.y + tcityData.size;
-          }
-          if (tcityData.x > x) {
-            x = tcityData.x;
-          }
-        }
-      }
-    } else if (!top && !left) {
-    }
-    return { x, y };
+  setSelectedCity(city: KR_CITIES | null) {
+    this.selectedCity = city;
   }
 
-  findMinPossibleYInX(x: number) {
-    const city = this.findRightMostCityOnY(x);
-    if (!city) {
-      return 0;
-    }
-    const cityData = this.cityRenderData.get(city)!;
-    const cityX = cityData.x;
-    const cityY = cityData.y;
-    const citySize = cityData.size;
-    const cityX2 = cityX + citySize;
-    const cityY2 = cityY + citySize;
-    return cityY2;
+  updateFilter(filter: Filter) {
+    this.filter = filter;
   }
 
-  findMinPossibleXInY(y: number) {
-    // find the city on the y
-    const city = this.findBottomMostCityOnX(y);
-    if (!city) {
-      return 0;
-    }
-    const cityData = this.cityRenderData.get(city)!;
-    const cityX = cityData.x;
-    const cityY = cityData.y;
-    const citySize = cityData.size;
-    const cityX2 = cityX + citySize;
-    const cityY2 = cityY + citySize;
-    return cityX2;
-  }
-
-  findCityByXY(x: number, y: number) {
-    for (const [city, cityData] of this.cityRenderData) {
-      const cityX = cityData.x;
-      const cityY = cityData.y;
-      const citySize = cityData.size;
-      const cityX2 = cityX + citySize;
-      const cityY2 = cityY + citySize;
-      if (!this.renderedFlag.get(city)) {
-        continue;
-      }
-      if (x > cityX && x < cityX2 && y > cityY && y < cityY2) {
-        return city;
-      }
-    }
-    return null;
-  }
-
-  findXYOverlapCity(city: KR_CITIES, xy: { x: number; y: number }) {
-    const cityData = this.cityRenderData.get(city)!;
-    const x = cityData.x;
-    const y = cityData.y;
-    const size = cityData.size;
-    const x2 = x + size;
-    const y2 = y + size;
-    if (xy.x >= x && xy.x <= x2 && xy.y >= y && xy.y <= y2) {
-      return true;
-    }
-    return false;
-  }
-
-  findBottomMostCityOnX(x: number) {
-    let maxY = 0;
-    let bottomCity: KR_CITIES | null = null;
-    for (const [city, cityData] of this.cityRenderData) {
-      const cityX = cityData.x;
-      const cityY = cityData.y;
-      const citySize = cityData.size;
-      const cityX2 = cityX + citySize;
-      const cityY2 = cityY + citySize;
-      if (!this.renderedFlag.get(city)) {
-        continue;
-      }
-      if (cityX <= x && cityX2 >= x && cityY2 > maxY) {
-        maxY = cityY2;
-        bottomCity = city;
-      }
-    }
-    return bottomCity;
-  }
-
-  findRightMostCityOnY(y: number) {
-    let maxX = 0;
-    let rightCity: KR_CITIES | null = null;
-    for (const [city, cityData] of this.cityRenderData) {
-      const cityX = cityData.x;
-      const cityY = cityData.y;
-      const citySize = cityData.size;
-      const cityX2 = cityX + citySize;
-      const cityY2 = cityY + citySize;
-      if (!this.renderedFlag.get(city)) {
-        continue;
-      }
-      if (cityY <= y && cityY2 >= y && cityX2 > maxX) {
-        maxX = cityX2;
-        rightCity = city;
-      }
-    }
-    return rightCity;
+  updateSetFilter(setFilter: (newFilter: Filter) => void) {
+    this.setFilter = setFilter;
   }
 
   renderCity(city: KR_CITIES) {
     // draw the city as square
+    this.p5.push();
+    if (!this.selectedCity || this.selectedCity === city) {
+      this.p5.fill(255, 0, 0, 100);
+    }
     const { x, y, size } = this.cityRenderData.get(city)!;
     // this.p5.fill(255, 0, 0);
     this.p5.circle(x, y, size);
@@ -604,17 +259,20 @@ export class AbstractMapCanvas {
     // center the text
     this.p5.textAlign(this.p5.CENTER, this.p5.CENTER);
     const textWithoutSlash = city.split("/")[0];
+    this.p5.fill("black");
     this.p5.text(textWithoutSlash, x, y);
     this.renderedFlag.set(city, true);
+    this.p5.pop();
   }
 
-  getTwoClosestCities(city: KR_CITIES) {
+  getClosestCities(city: KR_CITIES, renderedFlag: Map<KR_CITIES, boolean>) {
     // check if the city has been rendered
-    const renderedCities = Array.from(this.renderedFlag.keys()).filter((city) =>
-      this.renderedFlag.get(city)
+    const renderedCities = Array.from(renderedFlag.keys()).filter((city) =>
+      renderedFlag.get(city)
     );
     const cityProjection = this.cityProjectionPoints.get(city)!;
     const cityDistances = new Map<KR_CITIES, number>();
+
     if (renderedCities.length === 0) {
       return [];
     } else if (renderedCities.length === 1) {
@@ -638,7 +296,7 @@ export class AbstractMapCanvas {
       cityDistances.set(renderedCity, distance);
     }
     const sortedCities = Array.from(cityDistances).sort((a, b) => a[1] - b[1]);
-    return sortedCities.slice(0, 2).map((city) => city[0]);
+    return sortedCities.slice(0, 1).map((city) => city[0]);
   }
 
   getXYForCityFromCities(cities: KR_CITIES[], targetCity: KR_CITIES) {
@@ -654,90 +312,177 @@ export class AbstractMapCanvas {
       if (!targetCityProjection) {
         return { x: 0, y: 0 };
       }
-      const compareProjection = this.cityProjectionPoints.get(
-        citiesData[0].name
-      )!;
-      console.log(targetCityProjection, compareProjection);
+      const city = citiesData[0].name;
+      const compareProjection = this.cityProjectionPoints.get(city)!;
       // calculate the angle between the two cities
       const angle = Math.atan2(
-        compareProjection[1] - targetCityProjection[1],
-        compareProjection[0] - targetCityProjection[0]
+        targetCityProjection[1] - compareProjection[1],
+        targetCityProjection[0] - compareProjection[0]
       );
       // check if you should offset to the left or right
       const compareDistance = citiesData[0].size + targetCityData.size;
-
-      const x = citiesData[0].x + compareDistance;
-      const y = citiesData[0].y + compareDistance;
+      const x = citiesData[0].x + (compareDistance / 2) * Math.cos(angle);
+      const y = citiesData[0].y + (compareDistance / 2) * Math.sin(angle);
       return { x, y };
       //
-    } else if (citiesData.length === 2) {
-      const compareProjection1 = this.cityProjectionPoints.get(
-        citiesData[0].name
-      )!;
-      const compareProjection2 = this.cityProjectionPoints.get(
-        citiesData[1].name
-      )!;
-      return { x: 0, y: 0 };
     } else {
       throw new Error("Too many cities");
     }
   }
 
+  calculateRenderInfo() {
+    const renderInfoRecorded = new Map<KR_CITIES, boolean>();
+
+    const incheon = this.cityRenderData.get(KR_CITIES.INCHEON)!;
+    this.cityRenderData.get(KR_CITIES.INCHEON)!.x =
+      this.cityProjectionPoints.get(KR_CITIES.INCHEON)![0];
+    this.cityRenderData.get(KR_CITIES.INCHEON)!.y =
+      this.cityProjectionPoints.get(KR_CITIES.INCHEON)![1];
+    const incheonSize = this.getCitySize(KR_CITIES.INCHEON);
+    this.cityRenderData.get(KR_CITIES.INCHEON)!.size = incheonSize;
+
+    renderInfoRecorded.set(KR_CITIES.INCHEON, true);
+
+    // now we have to find the x, y for each city
+    for (const [city, cityData] of this.cityRenderData) {
+      if (city === KR_CITIES.INCHEON) {
+        continue;
+      }
+      const closestCities = this.getClosestCities(city, renderInfoRecorded);
+      const size = this.getCitySize(city);
+      this.cityRenderData.get(city)!.size = size;
+      const { x, y } = this.getXYForCityFromCities(closestCities, city);
+      this.cityRenderData.get(city)!.x = x;
+      this.cityRenderData.get(city)!.y = y;
+      renderInfoRecorded.set(city, true);
+    }
+
+    const leftMostX = Math.min(
+      ...Array.from(this.cityRenderData.values()).map(
+        (cityData) => cityData.x - cityData.size
+      )
+    );
+    const rightMostX = Math.max(
+      ...Array.from(this.cityRenderData.values()).map(
+        (cityData) => cityData.x + cityData.size
+      )
+    );
+    const topMostY = Math.min(
+      ...Array.from(this.cityRenderData.values()).map(
+        (cityData) => cityData.y - cityData.size
+      )
+    );
+    const bottomMostY = Math.max(
+      ...Array.from(this.cityRenderData.values()).map(
+        (cityData) => cityData.y + cityData.size
+      )
+    );
+
+    return {
+      leftMostX,
+      rightMostX,
+      topMostY,
+      bottomMostY,
+    };
+  }
+
+  getCityByXY(x: number, y: number) {
+    for (const [city, cityData] of this.cityRenderData) {
+      // city is circle
+      const distance = Math.sqrt(
+        Math.pow(x - cityData.x, 2) + Math.pow(y - cityData.y, 2)
+      );
+      if (distance < cityData.size / 2) {
+        return city;
+      }
+    }
+    return undefined;
+  }
+
   render() {
     this.updateProjectionPoints();
+    const { leftMostX, topMostY, rightMostX, bottomMostY } =
+      this.calculateRenderInfo();
+    const mapWidth = rightMostX - leftMostX;
+    const mapHeight = bottomMostY - topMostY;
+    this.p5.translate(
+      this.p5.width / 2 - mapWidth / 2 - leftMostX,
+      this.p5.height / 2 - mapHeight / 2 - topMostY
+    );
+    this.offset.x = this.p5.width / 2 - mapWidth / 2 - leftMostX;
+    this.offset.y = this.p5.height / 2 - mapHeight / 2 - topMostY;
+    // this.p5.push();
+    // this.p5.noFill();
+    // this.p5.stroke(0);
+    // this.p5.rect(leftMostX, topMostY, mapWidth, mapHeight);
+    // this.p5.pop();
+
+    // color rect
+
     for (const [city] of this.cityRenderData) {
       this.renderedFlag.set(city, false);
     }
     // we have to find center point through incheon, seoul, gangwon
     const maxSize = Math.max(this.p5.width, this.p5.height) / 4;
-    const minSize = Math.min(this.p5.width, this.p5.height) / 16;
-
-    const mapWidth = this.getMapMaxWidth();
-    const mapHeight = this.getMapMaxHeight();
-
-    this.offset.x = (this.p5.width - mapWidth) / 2;
-    this.offset.y = (this.p5.height - mapHeight) / 2;
 
     // render incheon first
-    const incheon = this.cityRenderData.get(KR_CITIES.INCHEON)!;
-    incheon.x = this.cityProjectionPoints.get(KR_CITIES.INCHEON)![0];
-    incheon.y = this.cityProjectionPoints.get(KR_CITIES.INCHEON)![1];
-    const incheonSize = this.getCitySize(KR_CITIES.INCHEON);
-    incheon.size = incheonSize;
+    // this.renderCities();
 
+    this.cityRenderData.get(KR_CITIES.INCHEON)!.x =
+      this.cityProjectionPoints.get(KR_CITIES.INCHEON)![0];
+    this.cityRenderData.get(KR_CITIES.INCHEON)!.y =
+      this.cityProjectionPoints.get(KR_CITIES.INCHEON)![1];
+    const incheonSize = this.getCitySize(KR_CITIES.INCHEON);
+    this.cityRenderData.get(KR_CITIES.INCHEON)!.size = incheonSize;
     this.renderCity(KR_CITIES.INCHEON);
 
+    // now we have to find the x, y for each city
     for (const [city, cityData] of this.cityRenderData) {
       if (city === KR_CITIES.INCHEON) {
         continue;
       }
-      const closestCities = this.getTwoClosestCities(city);
-      const { x, y } = this.getXYForCityFromCities(closestCities, city);
-      cityData.x = x;
-      cityData.y = y;
+      const closestCities = this.getClosestCities(city, this.renderedFlag);
       const size = this.getCitySize(city);
-      cityData.size = size;
+      this.cityRenderData.get(city)!.size = size;
+      const { x, y } = this.getXYForCityFromCities(closestCities, city);
+      this.cityRenderData.get(city)!.x = x;
+      this.cityRenderData.get(city)!.y = y;
       this.renderCity(city);
-      // console.log(city, closestCities);
     }
+    // this.p5.fill(255, 0, 0);
+    // this.p5.rect(0, 0, mapWidth, mapHeight);
+    if (this.hoveredCity) {
+      const cityData = this.cityRenderData.get(this.hoveredCity)!;
+      this.p5.push();
+      this.p5.noFill();
+      this.p5.strokeWeight(2);
+      this.p5.circle(cityData.x, cityData.y, cityData.size);
+      this.p5.pop();
+    }
+  }
 
-    // for (const [city, cityData] of this.cityRenderData) {
-    //   // if city is not rendered
-    //   if (!this.renderedFlag.get(city)) {
-    //     // find the x, y
-    //     const xy = this.findCityXY(city, this.renderedFlag);
+  mouseClicked() {
+    const x = this.p5.mouseX - this.offset.x;
+    const y = this.p5.mouseY - this.offset.y;
+    const city = this.getCityByXY(x, y);
+    if (city) {
+      console.log("jijiji");
+      this.setFilter({
+        ...this.filter,
+        city: city,
+      });
+      // this.setMapSelectedCity(city);
+    }
+  }
 
-    //     if (!xy) {
-    //       continue;
-    //     }
-    //     const { x, y } = xy;
-    //     const size = this.getCitySize(city);
-    //     this.cityRenderData.get(city)!.x = x;
-    //     this.cityRenderData.get(city)!.y = y;
-    //     this.cityRenderData.get(city)!.size = size;
-    //     this.renderCity(city);
-    //     //
-    //   }
-    // }
+  mouseMoved() {
+    const x = this.p5.mouseX - this.offset.x;
+    const y = this.p5.mouseY - this.offset.y;
+    const city = this.getCityByXY(x, y);
+    if (city) {
+      this.hoveredCity = city;
+    } else {
+      this.hoveredCity = null;
+    }
   }
 }
