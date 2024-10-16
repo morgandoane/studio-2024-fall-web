@@ -62,18 +62,41 @@ const DetailView: FC<DetailViewProps> = ({
     [demand]
   );
 
-  const exceedScore = useMemo(
-    () =>
-      citySupply.map((s, i) => {
-        const balancerProps = row.balancers[i];
-        const d = cityDemand[i];
-        const sUnit = s.total_unit;
-        const dUnit = d.unit;
-        const ratio = ((sUnit - dUnit) / dUnit) * 100;
-        return ratio;
-      }),
-    [citySupply, cityDemand]
-  );
+  const exceedScore = useMemo(() => {
+    if (!filter.city) {
+      // we have to group them by year and month
+      // then we can calculate the ratio
+      const yearMonthSupply = citySupply.reduce((acc, s) => {
+        const key = `${s.year}-${s.month}`;
+        if (!acc.has(key)) {
+          acc.set(key, 0);
+        }
+        acc.set(key, acc.get(key)! + s.total_unit);
+        return acc;
+      }, new Map<string, number>());
+      const yearMonthDemand = cityDemand.reduce((acc, d) => {
+        const key = `${d.year}-${d.month}`;
+        if (!acc.has(key)) {
+          acc.set(key, 0);
+        }
+        acc.set(key, acc.get(key)! + d.unit);
+        return acc;
+      }, new Map<string, number>());
+      return Array.from(yearMonthSupply.keys()).map((key) => {
+        const supply = yearMonthSupply.get(key)!;
+        const demand = yearMonthDemand.get(key)!;
+        return ((supply - demand) / demand) * 100;
+      });
+    }
+    return citySupply.map((s, i) => {
+      const balancerProps = row.balancers[i];
+      const d = cityDemand[i];
+      const sUnit = s.total_unit;
+      const dUnit = d.unit;
+      const ratio = ((sUnit - dUnit) / dUnit) * 100;
+      return ratio;
+    });
+  }, [citySupply, cityDemand, filter]);
 
   const bestScore = useMemo(() => {
     return Math.max(...exceedScore).toFixed(1);
