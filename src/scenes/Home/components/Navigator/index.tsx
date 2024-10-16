@@ -6,6 +6,7 @@ import KR_CITIES from "@utils/cities";
 import KoreaMap from "./map";
 import Resizer from "./mapResizer";
 import AbstractMap from "./AbstractMap";
+import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 
 export interface NavigatorProps {
   filter: Filter;
@@ -58,7 +59,29 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
   return (
     <div className="sticky top-0 h-full border-r border-gray-200">
       <div className="p-6 h-full min-w-72 w-72 flex flex-col">
-        <h2>Heat Map</h2>
+        {filter.city && (
+          <button
+            className="text-sm text-gray-500 text-left flex items-center"
+            onClick={() => setFilter({ ...filter, city: null })}
+          >
+            <ArrowLeftIcon className="w-4 h-4 mr-2" />
+            Back to Korea Data
+          </button>
+        )}
+        <div className="text-body-small py-4">
+          <span className="opacity-35">
+            You are currently viewing the supply demand ratio of{" "}
+          </span>
+          <span className="font-bold underline">
+            {filter.city ? filter.city : "All Korea"}
+          </span>
+          {!filter.city && (
+            <div className="text-body-small text-center bg-gray-100 rounded-sm p-2 mt-2 -mb-8">
+              Select a city to view the supply demand ratio of a specific region
+            </div>
+          )}
+        </div>
+
         <Resizer>
           <KoreaMap
             width={50}
@@ -70,7 +93,6 @@ const Navigator: FC<NavigatorProps> = ({ filter, setFilter }) => {
             minDonation={minDonation}
           />
         </Resizer>
-        <h2>Bubble Map</h2>
         <Resizer>
           {/* <div ref={gotSupplyContainer}></div> */}
           <AbstractMap

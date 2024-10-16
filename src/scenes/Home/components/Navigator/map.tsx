@@ -271,7 +271,12 @@ const KoreaMap: FC<KoreaMapProps> = ({
   ]);
 
   return (
-    <div id="chart">
+    <div id="chart" className="relative">
+      {!filter.city && (
+        <div className="absolute text-body-small mt-8 opacity-50 text-center w-full">
+          Blood Donation Heatmap
+        </div>
+      )}
       <pre
         className="tooltip"
         style={{
@@ -290,6 +295,7 @@ const KoreaMap: FC<KoreaMapProps> = ({
       >
         {tooltip.content}
       </pre>
+
       <svg ref={svgRef}></svg>
     </div>
   );

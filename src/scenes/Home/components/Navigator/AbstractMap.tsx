@@ -178,7 +178,13 @@ const AbstractMap: FC<AbstractMapProps> = ({
     supplyCanvasRef.current.updateSetFilter(setFilter);
   }, [setFilter]);
 
-  return <div ref={gotSupplyContainer}></div>;
+  return (
+    <div className="relative" ref={gotSupplyContainer}>
+      <div className="absolute text-body-small mt-8 opacity-50 text-center w-full">
+        Blood Donation Map by Volume
+      </div>
+    </div>
+  );
 };
 
 export default AbstractMap;
