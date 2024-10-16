@@ -1,4 +1,5 @@
 import { Demand } from '@data/demand/Demand';
+import { capFirst } from '@utils/capFirst';
 import { FC } from 'react';
 import { JSONTree } from 'react-json-tree';
 
@@ -48,7 +49,8 @@ const DemandDetail: FC<DemandDetailProps> = ({ demand }) => {
 				<ul>
 					{topSurgeriesByUnit.map(([key, value]) => (
 						<li key={key} className="text-body-medium">
-							{key} ({value.units.toFixed(0)} units){' '}
+							{key.split(' ').map(capFirst).join(' ')} (
+							{parseInt(value.units.toFixed(0)).toLocaleString()} units){' '}
 						</li>
 					))}
 				</ul>
@@ -58,7 +60,8 @@ const DemandDetail: FC<DemandDetailProps> = ({ demand }) => {
 				<ul>
 					{topSurgeriesByCount.map(([key, value]) => (
 						<li key={key} className="text-body-medium">
-							{key} ({Math.round(value.count)} patients){' '}
+							{key.split(' ').map(capFirst).join(' ')} (
+							{Math.round(value.count).toLocaleString()} patients){' '}
 						</li>
 					))}
 				</ul>
