@@ -31,14 +31,20 @@ const EventCard: FC<EventCardProps> = ({ event, index }) => {
 					}}
 					onClick={() => setOpen(true)}
 				>
-					<p className="text-heading-6">
-						{months[event.month - 1].long} {event.year}
-					</p>
+					<p className="text-heading-6">{capFirstAllLetters(event.type)}</p>
 					<p className="text-body-medium max-w-prose">
 						{event.content_eng.length > maxLen
 							? event.content_eng.slice(0, maxLen) + '...'
 							: event.content_eng}
 					</p>
+					{event.collaboration && event.collaboration.length && (
+						<div>
+							<p className="font-bold pt-2 text-indigo-500">
+								Collaboration:{' '}
+								{event.collaboration.map(capFirstAllLetters).join(', ')}
+							</p>
+						</div>
+					)}
 				</div>
 				<Dialog
 					open={open}
@@ -47,10 +53,18 @@ const EventCard: FC<EventCardProps> = ({ event, index }) => {
 				>
 					<div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black bg-opacity-50">
 						<DialogPanel className="max-w-lg space-y-4 border bg-white p-12">
-							<DialogTitle className="font-bold">
-								{months[event.month - 1].long} {event.year}
+							<DialogTitle className="font-bold text-2xl">
+								{capFirstAllLetters(event.type)}
 							</DialogTitle>
 							<Description>{event.content_eng}</Description>
+							{event.collaboration && event.collaboration.length && (
+								<div>
+									<p className="font-bold pt-2 text-indigo-500">
+										Collaboration:{' '}
+										{event.collaboration.map(capFirstAllLetters).join(', ')}
+									</p>
+								</div>
+							)}
 						</DialogPanel>
 					</div>
 				</Dialog>
@@ -60,3 +74,9 @@ const EventCard: FC<EventCardProps> = ({ event, index }) => {
 };
 
 export default EventCard;
+
+const capFirstAllLetters = (str: string) =>
+	str
+		.split(' ')
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
