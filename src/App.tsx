@@ -1,13 +1,14 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-import Reviews from './scenes/Reviews';
+import Dashboard from '@scenes/Dashboard';
+import { FC } from 'react';
+import { Route, Routes } from 'react-router';
 
-function App() {
+const App: FC = () => {
 	return (
 		<Routes>
-			<Route index element={<Navigate to="reviews" />} />
-			<Route path="reviews/*" element={<Reviews />} />
+			<Route index element={<Dashboard />} />
+			<Route path="*" element={<div>Not Found</div>} />
 		</Routes>
 	);
-}
+};
 
 export default App;
